@@ -45,8 +45,8 @@ No issues found.
 
 ### D8. LLM-independence
 
-1. **[Medium]** Lines 250–273 ([step 1.4.2](lab/tasks/required/task-1.md#142-implement-the-pipeline)): The implementation step relies entirely on an AI coding agent. The task does not explicitly state that AI is required for this step, nor does it provide an alternative path (placeholder templates, step-by-step coding instructions) for students who choose not to use AI. Convention 4.16 requires tasks to be completable without LLMs unless AI use is explicitly stated.
-   **Suggested fix:** Either (a) add placeholder code or step-by-step implementation guidance as a non-AI path, or (b) explicitly state that this step requires AI and label it as an AI-required part per convention 4.16.
+1. ~~**[Medium]** Lines 250–273 ([step 1.4.2](lab/tasks/required/task-1.md#142-implement-the-pipeline)): The implementation step relies entirely on an AI coding agent. The task does not explicitly state that AI is required for this step, nor does it provide an alternative path (placeholder templates, step-by-step coding instructions) for students who choose not to use AI. Convention 4.16 requires tasks to be completable without LLMs unless AI use is explicitly stated.
+   **Suggested fix:** Either (a) add placeholder code or step-by-step implementation guidance as a non-AI path, or (b) explicitly state that this step requires AI and label it as an AI-required part per convention 4.16.~~
 
 ### D9. Git workflow coherence
 
@@ -209,13 +209,13 @@ No TODOs found.
 | Category | Count |
 | --- | --- |
 | Conceptual [High] | 0 |
-| Conceptual [Medium] | 1 |
+| Conceptual [Medium] | 0 |
 | Conceptual [Low] | 3 |
 | Convention [High] | 0 |
 | Convention [Medium] | 0 |
 | Convention [Low] | 2 |
 | TODOs | 0 |
 | Empty sections | 0 |
-| **Total** | **6** |
+| **Total** | **5** |
 
-**Overall:** The remaining issues are all conceptual (author decisions required) plus two low-severity convention findings. The main conceptual concern is that step 1.4.2 relies entirely on an AI coding agent without providing a non-AI alternative or explicitly stating that AI is required (D8). Step 1.2 includes branch creation instructions that the template reserves for a dedicated step (Section 1 finding), and one borderline compound instruction in step 1.4.3 could optionally be split (4.1 finding). All high and medium convention violations have been fixed.
+**Overall:** The remaining issues are conceptual (author decisions required) plus two low-severity convention findings. Step 1.2 includes branch creation instructions that the template reserves for a dedicated step (Section 1 finding), and one borderline compound instruction in step 1.4.3 could optionally be split (4.1 finding). All high and medium violations have been fixed.
