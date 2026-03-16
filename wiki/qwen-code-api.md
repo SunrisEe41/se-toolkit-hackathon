@@ -5,7 +5,10 @@
 - [What is `Qwen Code` API](#what-is-qwen-code-api)
 - [Set up the `Qwen Code` API (REMOTE)](#set-up-the-qwen-code-api-remote)
   - [Set up the `Qwen Code` CLI (REMOTE)](#set-up-the-qwen-code-cli-remote)
-  - [Start the `Qwen Code` API service (REMOTE)](#start-the-qwen-code-api-service-remote)
+  - [Clone the `Qwen Code` API repository (REMOTE)](#clone-the-qwen-code-api-repository-remote)
+  - [Enter the `Qwen Code` API repository directory (REMOTE)](#enter-the-qwen-code-api-repository-directory-remote)
+  - [Prepare the environment in the `Qwen Code` API repository (REMOTE)](#prepare-the-environment-in-the-qwen-code-api-repository-remote)
+  - [Start the `Qwen Code` API (REMOTE)](#start-the-qwen-code-api-remote)
   - [Get the `Qwen Code` API config values (REMOTE)](#get-the-qwen-code-api-config-values-remote)
   - [Check that the `Qwen Code` API is accessible (REMOTE or LOCAL)](#check-that-the-qwen-code-api-is-accessible-remote-or-local)
 
@@ -13,21 +16,22 @@
 
 <!-- TODO visualize -->
 
-[`qwen-code-oai-proxy`](https://github.com/inno-se-toolkit/qwen-code-oai-proxy) exposes [`Qwen Code`](./qwen.md#what-is-qwen-code) through an [OpenAI-compatible API](./llm.md#openai-compatible-api) so that other tools can use it as an [LLM](./llm.md#what-is-an-llm).
+The `Qwen Code` API is an [OpenAI-compatible API](./llm.md#openai-compatible-api) that uses the [`Qwen Code` credentials file](./qwen.md#qwen-code-credentials-file) to provide access to the [`Qwen` API](./qwen.md#qwen-api).
 
-See:
-
-- [Set up the `Qwen Code` API (REMOTE)](#set-up-the-qwen-code-api-remote)
+The `Qwen Code` API is deployed using [`qwen-code-oai-proxy`](https://github.com/inno-se-toolkit/qwen-code-oai-proxy).
 
 ## Set up the `Qwen Code` API (REMOTE)
 
 Complete these steps:
 
 1. [Set up the `Qwen Code` CLI (REMOTE)](#set-up-the-qwen-code-cli-remote).
-2. [Start the `Qwen Code` API service (REMOTE)](#start-the-qwen-code-api-service-remote).
-3. [Get the `Qwen Code` API config values (REMOTE)](#get-the-qwen-code-api-config-values-remote).
-4. [Check that the `Qwen Code` API is accessible (REMOTE)](#check-that-the-qwen-code-api-is-accessible-remote-or-local).
-5. [Check that the `Qwen Code` API is accessible (LOCAL)](#check-that-the-qwen-code-api-is-accessible-remote-or-local).
+2. [Clone the `Qwen Code` API repository (REMOTE)](#clone-the-qwen-code-api-repository-remote).
+3. [Enter the `Qwen Code` API repository directory (REMOTE)](#enter-the-qwen-code-api-repository-directory-remote).
+4. [Prepare the environment in the `Qwen Code` API repository (REMOTE)](#prepare-the-environment-in-the-qwen-code-api-repository-remote).
+5. [Start the `Qwen Code` API (REMOTE)](#start-the-qwen-code-api-remote).
+6. [Get the `Qwen Code` API config values (REMOTE)](#get-the-qwen-code-api-config-values-remote).
+7. [Check that the `Qwen Code` API is accessible (REMOTE)](#check-that-the-qwen-code-api-is-accessible-remote-or-local).
+8. [Check that the `Qwen Code` API is accessible (LOCAL)](#check-that-the-qwen-code-api-is-accessible-remote-or-local).
 
 ### Set up the `Qwen Code` CLI (REMOTE)
 
@@ -53,7 +57,7 @@ Complete these steps:
 
 8. [Quit the chat with `Qwen Code`](./qwen.md#quit-the-chat-with-qwen-code).
 
-### Start the `Qwen Code` API service (REMOTE)
+### Clone the `Qwen Code` API repository (REMOTE)
 
 1. To [clone using the `VS Code Terminal` the repo](./git-vscode.md#clone-the-repo-using-the-vs-code-terminal)
 
@@ -65,7 +69,9 @@ Complete these steps:
    git clone https://github.com/inno-se-toolkit/qwen-code-oai-proxy ~/qwen-code-oai-proxy
    ```
 
-2. To enter the repository directory,
+### Enter the `Qwen Code` API repository directory (REMOTE)
+
+1. To enter the repository directory,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -73,7 +79,9 @@ Complete these steps:
    cd ~/qwen-code-oai-proxy
    ```
 
-3. To create the [environment](./environments.md#what-is-an-environment) file,
+### Prepare the environment in the `Qwen Code` API repository (REMOTE)
+
+1. To create the [`.env`](./file-formats.md#env) file,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -81,7 +89,7 @@ Complete these steps:
    cp .env.example .env
    ```
 
-4. To open the `.env` file in `nano`,
+2. To open the `.env` file in `nano`,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -89,13 +97,15 @@ Complete these steps:
    nano .env
    ```
 
-5. Write an arbitrary value for `QWEN_API_KEY`.
+3. Write an arbitrary value for `QWEN_API_KEY`.
 
    This key will protect your `Qwen Code` API.
 
-6. Save the file (`Ctrl + O`).
+4. Save the file (`Ctrl + O`).
 
-7. To start the `Qwen Code` API,
+### Start the `Qwen Code` API (REMOTE)
+
+1. To start the `Qwen Code` API via [`Docker Compose`](./docker-compose.md#what-is-docker-compose),
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -105,9 +115,9 @@ Complete these steps:
 
 ### Get the `Qwen Code` API config values (REMOTE)
 
-1. [Connect to your VM](./vm.md#connect-to-the-vm) if not yet connected.
+1. [Connect to the VM](./vm-access.md#connect-to-the-vm-local) if not connected.
 
-2. To enter the `Qwen Code` API repository directory,
+2. To get the value of `HOST_PORT` in `.env`,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -115,15 +125,7 @@ Complete these steps:
    cd ~/qwen-code-oai-proxy
    ```
 
-3. To get the value of `HOST_PORT` in `.env`,
-
-   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
-
-   ```terminal
-   cat .env | grep HOST_PORT
-   ```
-
-4. To get the value of `QWEN_API_KEY` in `.env`,
+3. To get the value of `QWEN_API_KEY` in `.env`,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -138,7 +140,7 @@ Complete these steps:
    - `HOST_PORT`
    - `QWEN_API_KEY`.
 
-2. To send the request to the `Qwen Code` API (REMOTE or LOCAL),
+2. To send an [`HTTP` request](./http.md#http-request) to the [`Qwen Code` API](#what-is-qwen-code-api),
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -153,8 +155,8 @@ Complete these steps:
    Replace placeholders:
 
    - `<qwen-code-api-address>` with:
-     - `localhost` if you run on your VM (REMOTE)
-     - [`<your-vm-ip-address>`](vm.md#your-vm-ip-address) if you run on your laptop (LOCAL)
+     - `localhost` (REMOTE)
+     - [`<your-vm-ip-address>`](vm.md#your-vm-ip-address-placeholder) (LOCAL)
    - `<qwen-api-port>` with the value of `HOST_PORT`
    - `<qwen-api-key>` with the value of `QWEN_API_KEY`
    - `<qwen-model>` with one of the available models:
