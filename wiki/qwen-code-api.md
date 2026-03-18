@@ -51,7 +51,7 @@ See:
 - [`localhost`](./computer-networks.md#localhost)
 - [`<qwen-code-api-host-port>`](#qwen-code-api-host-port-placeholder)
 - [`<lms-api-host-port>`](./lms-api.md#lms-api-host-port-placeholder)
-- [`<lms-api-url>`](./lms-api.md#lms-api-url-placeholder)
+- [`<lms-api-base-url>`](./lms-api.md#lms-api-base-url-placeholder)
 
 ### `<qwen-code-api-base-url>` placeholder
 
