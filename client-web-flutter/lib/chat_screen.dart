@@ -12,7 +12,10 @@ class ChatMessage {
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String apiKey;
+  final VoidCallback? onDisconnect;
+
+  const ChatScreen({super.key, required this.apiKey, this.onDisconnect});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -39,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _llm.connect();
+    _llm.connect(apiKey: widget.apiKey);
     _sub = _llm.responses.listen(
       (content) {
         _responseTimeout?.cancel();
@@ -120,6 +123,14 @@ class _ChatScreenState extends State<ChatScreen> {
         title: const Text('LMS Chatbot'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
+        actions: [
+          if (widget.onDisconnect != null)
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Disconnect',
+              onPressed: widget.onDisconnect,
+            ),
+        ],
       ),
       body: Column(
         children: [
