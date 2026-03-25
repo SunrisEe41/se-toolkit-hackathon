@@ -29,7 +29,7 @@
   - [Image pull fails](#image-pull-fails)
   - [Port conflict (`port is already allocated`)](#port-conflict-port-is-already-allocated)
   - [DNS resolution errors](#dns-resolution-errors)
-  - [User not in the `docker` group](#user-not-in-the-docker-group)
+  - [The user `<user>` is not in the group `docker`](#the-user-user-is-not-in-the-group-docker)
 
 ## What is `Docker`
 
@@ -383,6 +383,6 @@ Steps to fix:
 
 1. [Configure `Docker` DNS](#configure-docker-dns).
 
-### User not in the `docker` group
+### The user `<user>` is not in the group `docker`
 
-1. [Add the user `admin` to the group `docker` (REMOTE)](./docker.md#add-the-user-user-to-the-group-docker-remote).
+1. [Add the user `<user>` to the group `docker` (REMOTE)](./docker.md#add-the-user-user-to-the-group-docker-remote).
