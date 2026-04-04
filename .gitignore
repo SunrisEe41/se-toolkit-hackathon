@@ -4,12 +4,14 @@ __pycache__/
 *.egg-info/
 
 *.secret
-
+.claude
+.qwen/
 .ruff_cache
 .pytest_cache
-
+.vscode/
 .direnv
-
+QWEN.md
+uv.lock
 tmp
 
 **/settings.local.json
