@@ -14,6 +14,7 @@ from starlette.responses import Response
 from lms_backend.auth import verify_api_key
 from lms_backend.routers import analytics, interactions, items, learners, pipeline
 from lms_backend.settings import settings
+from exam_prep.routers import health as exam_health, tasks, theory, topics
 
 logger = logging.getLogger(__name__)
 
@@ -126,5 +127,34 @@ app.include_router(
     analytics.router,
     prefix="/analytics",
     tags=["analytics"],
+    dependencies=[Depends(verify_api_key)],
+)
+
+# Exam prep routes
+app.include_router(
+    exam_health.router,
+    prefix="/exam/health",
+    tags=["exam-prep"],
+    dependencies=[Depends(verify_api_key)],
+)
+
+app.include_router(
+    topics.router,
+    prefix="/exam/topics",
+    tags=["exam-prep"],
+    dependencies=[Depends(verify_api_key)],
+)
+
+app.include_router(
+    tasks.router,
+    prefix="/exam/tasks",
+    tags=["exam-prep"],
+    dependencies=[Depends(verify_api_key)],
+)
+
+app.include_router(
+    theory.router,
+    prefix="/exam/theory",
+    tags=["exam-prep"],
     dependencies=[Depends(verify_api_key)],
 )

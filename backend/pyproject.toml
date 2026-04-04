@@ -21,10 +21,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-  "aiosqlite>=0.21.0",
-  "greenlet>=3.2.0",
-]
+dev = ["aiosqlite>=0.21.0", "greenlet>=3.2.0"]
 
 [build-system]
 requires = ["setuptools>=75.0"]
@@ -35,4 +32,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["lms_backend*"]
+include = ["lms_backend*", "exam_prep*"]
