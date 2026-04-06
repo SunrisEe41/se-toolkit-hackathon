@@ -1,10 +1,15 @@
 """Progress endpoints: submit answer, exam mode, progress stats."""
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, col, func, select
+from sqlmodel import SQLModel, Session, col, func, select
 
 from exam_prep.database import get_session
-from exam_prep.models.attempt import AttemptCreate, AttemptRead, AttemptRecord, ProgressRead
+from exam_prep.models.attempt import (
+    AttemptCreate,
+    AttemptRead,
+    AttemptRecord,
+    ProgressRead,
+)
 from exam_prep.models.task import TaskRecord
 from exam_prep.models.topic import TopicRecord
 
@@ -76,11 +81,15 @@ class ExamModeRead(ProgressRead):
     tasks: list[dict]
 
 
+class ExamModeBody(SQLModel):
+    student_id: str
+    num_tasks: int = 5
+
+
 @router.post("/exam-mode", response_model=ExamModeRead)
 def start_exam_mode(
     *,
-    student_id: str,
-    num_tasks: int = 5,
+    body: ExamModeBody,
     session: Session = Depends(get_session),
 ):
     """Start exam mode: pick N random tasks from all topics. Returns tasks without answers."""
@@ -90,7 +99,7 @@ def start_exam_mode(
     if not all_tasks:
         raise HTTPException(status_code=404, detail="No tasks available")
 
-    selected = random.sample(all_tasks, min(num_tasks, len(all_tasks)))
+    selected = random.sample(all_tasks, min(body.num_tasks, len(all_tasks)))
     tasks = [
         {
             "id": t.id,
@@ -101,9 +110,9 @@ def start_exam_mode(
         for t in selected
     ]
 
-    # Reuse ProgressRead fields (temporary, will be filled as student answers)
+    # Reuse ProgressRead fields
     attempts = session.exec(
-        select(AttemptRecord).where(AttemptRecord.student_id == student_id)
+        select(AttemptRecord).where(AttemptRecord.student_id == body.student_id)
     ).all()
     total = len(attempts)
     correct = sum(1 for a in attempts if a.is_correct)
@@ -113,7 +122,7 @@ def start_exam_mode(
     topics_solved = list({a.task_id for a in attempts if a.is_correct})
 
     return ExamModeRead(
-        student_id=student_id,
+        student_id=body.student_id,
         total_attempts=total,
         correct_count=correct,
         wrong_count=wrong,
