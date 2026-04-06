@@ -47,7 +47,7 @@ def submit_answer(
     )
 
 
-@router.get("/progress/{student_id}", response_model=ProgressRead)
+@router.get("/{student_id}", response_model=ProgressRead)
 def get_progress(
     *,
     student_id: str,
