@@ -11,39 +11,23 @@ interface ProgressData {
   topics_solved: number[];
 }
 
-export function ProgressPage({ apiKey }: { apiKey: string }) {
-  const [studentId, setStudentId] = useState(
-    () => localStorage.getItem("exam_student_id") ?? ""
-  );
-  const [draft, setDraft] = useState(studentId);
+export function ProgressPage({ apiKey, studentId }: { apiKey: string; studentId: string }) {
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [error, setError] = useState("");
 
   const headers = { Authorization: `Bearer ${apiKey}` };
 
-  const fetchProgress = (id: string) => {
-    if (!id.trim()) return;
+  useEffect(() => {
+    if (!studentId) return;
     setError("");
-    fetch(`/exam/progress/${id.trim()}`, { headers })
+    fetch(`/exam/progress/${studentId.trim()}`, { headers })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
-      .then((data) => setProgress(data))
+      .then(setProgress)
       .catch((e) => setError(e.message));
-  };
-
-  useEffect(() => {
-    if (studentId) fetchProgress(studentId);
-  }, [studentId]);
-
-  const handleSubmit = () => {
-    const trimmed = draft.trim();
-    if (!trimmed) return;
-    localStorage.setItem("exam_student_id", trimmed);
-    setStudentId(trimmed);
-    fetchProgress(trimmed);
-  };
+  }, [studentId, apiKey]);
 
   const accuracyColor = (a: number) =>
     a >= 0.8 ? "#22c55e" : a >= 0.5 ? "#f59e0b" : "#ef4444";
@@ -52,19 +36,9 @@ export function ProgressPage({ apiKey }: { apiKey: string }) {
     <div className="progress-page">
       <h2>📊 Your Progress</h2>
 
-      <div className="progress-form">
-        <label>
-          Student ID:
-          <input
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Your name or ID"
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          />
-        </label>
-        <button onClick={handleSubmit}>Check</button>
-      </div>
+      {!studentId && (
+        <p className="no-data">Enter your name/ID in the header above to view progress.</p>
+      )}
 
       {error && <p className="error">{error}</p>}
 

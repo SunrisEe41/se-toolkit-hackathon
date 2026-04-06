@@ -5,6 +5,7 @@ import { ChatPage } from "./ChatPage";
 import "./App.css";
 
 const STORAGE_KEY = "api_key";
+const STUDENT_ID_KEY = "exam_student_id";
 
 type Page = "theory" | "progress" | "chat";
 
@@ -12,6 +13,10 @@ function App() {
   const [token, setToken] = useState(
     () => localStorage.getItem(STORAGE_KEY) ?? ""
   );
+  const [studentId, setStudentId] = useState(
+    () => localStorage.getItem(STUDENT_ID_KEY) ?? ""
+  );
+  const [sidDraft, setSidDraft] = useState(studentId);
   const [draft, setDraft] = useState("");
   const [page, setPage] = useState<Page>("theory");
 
@@ -62,14 +67,33 @@ function App() {
           {navBtn("chat", "Chat", "🤖")}
           {navBtn("progress", "Progress", "📊")}
         </nav>
+        <form
+          className="sid-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const trimmed = sidDraft.trim();
+            if (trimmed) {
+              localStorage.setItem(STUDENT_ID_KEY, trimmed);
+              setStudentId(trimmed);
+            }
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Your name / Student ID"
+            value={sidDraft}
+            onChange={(e) => setSidDraft(e.target.value)}
+          />
+          <button type="submit">Save</button>
+        </form>
         <button className="btn-disconnect" onClick={handleDisconnect}>
           Disconnect
         </button>
       </header>
 
       {page === "theory" && <TheoryPage apiKey={token} />}
-      {page === "chat" && <ChatPage apiKey={token} />}
-      {page === "progress" && <ProgressPage apiKey={token} />}
+      {page === "chat" && <ChatPage apiKey={token} studentId={studentId} />}
+      {page === "progress" && <ProgressPage apiKey={token} studentId={studentId} />}
     </div>
   );
 }

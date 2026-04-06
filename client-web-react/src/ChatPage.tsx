@@ -21,7 +21,7 @@ function MessageContent({ text }: { text: string }) {
   );
 }
 
-export function ChatPage({ apiKey }: { apiKey: string }) {
+export function ChatPage({ apiKey, studentId }: { apiKey: string; studentId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

@@ -49,6 +49,30 @@ tr:nth-child(even) {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.sid-form {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.sid-form input {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.sid-form button {
+  padding: 0.25rem 0.6rem;
+  background: #6b7280;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 
 .app-header h1 {
