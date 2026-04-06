@@ -507,3 +507,297 @@ tr:nth-child(even) { background: #fafafa; }
 
 /* Error */
 .error { color: #dc3545; }
+
+/* Student ID overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.overlay-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+}
+
+.overlay-card h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+}
+
+.overlay-card p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.overlay-card form {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.overlay-card input {
+  flex: 1;
+  padding: 0.7rem 0.8rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.overlay-card input:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.overlay-card button {
+  padding: 0.7rem 1.5rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.overlay-card button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Header right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-badge {
+  font-size: 0.95rem;
+  color: #555;
+  background: #f0f0f0;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+}
+
+/* Exam page */
+.exam-page h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.exam-setup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.exam-setup label {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exam-setup select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.exam-setup button {
+  padding: 0.5rem 1.5rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.exam-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.exam-counter {
+  font-size: 1rem;
+  color: #666;
+}
+
+.exam-progress-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.exam-progress-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.exam-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.exam-actions button {
+  padding: 0.5rem 1.25rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  background: #6b7280 !important;
+}
+
+.exam-task {
+  margin-bottom: 1rem;
+}
+
+.exam-task textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* Task navigation dots */
+.exam-task-nav {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.task-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #666;
+}
+
+.task-dot.current {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.task-dot.done-ok {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+.task-dot.done-fail {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* Exam results */
+.exam-results {
+  max-width: 750px;
+}
+
+.result-score {
+  text-align: center;
+  margin: 1rem 0 1.5rem;
+}
+
+.score-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.score-label {
+  font-size: 1rem;
+  color: #666;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.result-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.result-item.ok {
+  border-left: 4px solid #22c55e;
+  background: #f0fdf4;
+}
+
+.result-item.fail {
+  border-left: 4px solid #ef4444;
+  background: #fef2f2;
+}
+
+.result-item strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.result-item p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.result-item button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.5rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}

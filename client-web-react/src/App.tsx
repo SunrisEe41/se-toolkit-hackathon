@@ -2,12 +2,14 @@ import { useState, useEffect, FormEvent } from "react";
 import { TheoryPage } from "./TheoryPage";
 import { ProgressPage } from "./ProgressPage";
 import { ChatPage } from "./ChatPage";
+import { ExamPage } from "./ExamPage";
+import { StudentIdOverlay } from "./StudentIdOverlay";
 import "./App.css";
 
 const STORAGE_KEY = "api_key";
 const STUDENT_ID_KEY = "exam_student_id";
 
-type Page = "theory" | "progress" | "chat";
+type Page = "theory" | "chat" | "exam" | "progress";
 
 function App() {
   const [token, setToken] = useState(
@@ -17,7 +19,6 @@ function App() {
     () => localStorage.getItem(STUDENT_ID_KEY) ?? ""
   );
   const [sidDraft, setSidDraft] = useState(studentId);
-  const [sidSaved, setSidSaved] = useState(false);
   const [draft, setDraft] = useState("");
   const [page, setPage] = useState<Page>("theory");
 
@@ -31,15 +32,30 @@ function App() {
 
   function handleDisconnect() {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STUDENT_ID_KEY);
     setToken("");
     setDraft("");
+    setStudentId("");
+    setSidDraft("");
+  }
+
+  function handleStudentId(id: string) {
+    localStorage.setItem(STUDENT_ID_KEY, id);
+    setStudentId(id);
+  }
+
+  if (!studentId) {
+    return <StudentIdOverlay onSubmit={handleStudentId} />;
   }
 
   if (!token) {
     return (
       <form className="token-form" onSubmit={handleConnect}>
         <h1>🎓 Exam Prep Bot</h1>
-        <p>Practice problems, review theory, and chat with an AI agent.</p>
+        <p>
+          Welcome, <strong>{studentId}</strong>! Practice problems, review
+          theory, and take mock exams.
+        </p>
         <input
           type="password"
           placeholder="API Key"
@@ -65,39 +81,27 @@ function App() {
       <header className="app-header">
         <nav className="nav-links">
           {navBtn("theory", "Theory", "📚")}
+          {navBtn("exam", "Exam", "📝")}
           {navBtn("chat", "Chat", "🤖")}
           {navBtn("progress", "Progress", "📊")}
         </nav>
-        <form
-          className="sid-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const trimmed = sidDraft.trim();
-            if (trimmed) {
-              localStorage.setItem(STUDENT_ID_KEY, trimmed);
-              setStudentId(trimmed);
-              setSidSaved(true);
-              setTimeout(() => setSidSaved(false), 2000);
-            }
-          }}
-        >
-          <span className="sid-label">Student:</span>
-          <input
-            type="text"
-            placeholder="Your name"
-            value={sidDraft}
-            onChange={(e) => setSidDraft(e.target.value)}
-          />
-          <button type="submit">{sidSaved ? "✓" : "Save"}</button>
-        </form>
-        <button className="btn-disconnect" onClick={handleDisconnect}>
-          Disconnect
-        </button>
+        <div className="header-right">
+          <span className="student-badge">👤 {studentId}</span>
+          <button
+            className="btn-disconnect"
+            onClick={handleDisconnect}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <div className="pages-container">
         <div className={`page ${page === "theory" ? "active" : ""}`}>
           <TheoryPage apiKey={token} />
+        </div>
+        <div className={`page ${page === "exam" ? "active" : ""}`}>
+          <ExamPage apiKey={token} studentId={studentId} />
         </div>
         <div className={`page ${page === "chat" ? "active" : ""}`}>
           <ChatPage apiKey={token} studentId={studentId} />
