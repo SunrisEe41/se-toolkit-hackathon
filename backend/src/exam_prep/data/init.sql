@@ -1,7 +1,34 @@
 -- Exam prep seed data
--- Analytical Geometry & Linear Algebra — 7 weeks of topics
+-- Analytical Geometry and Linear Algebra - 7 weeks of topics
 
--- ─── Topics ─────────────────────────────────────────────────────────────────
+-- Tables
+
+CREATE TABLE IF NOT EXISTS topic (
+    id SERIAL PRIMARY KEY,
+    slug VARCHAR(128) NOT NULL UNIQUE,
+    title VARCHAR(256) NOT NULL,
+    description TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS task (
+    id SERIAL PRIMARY KEY,
+    topic_id INTEGER NOT NULL REFERENCES topic(id) ON DELETE CASCADE,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    explanation TEXT NOT NULL DEFAULT '',
+    difficulty VARCHAR(16) NOT NULL DEFAULT 'medium'
+);
+
+CREATE TABLE IF NOT EXISTS theory (
+    id SERIAL PRIMARY KEY,
+    topic_id INTEGER NOT NULL REFERENCES topic(id) ON DELETE CASCADE,
+    title VARCHAR(256) NOT NULL,
+    content TEXT NOT NULL
+);
+
+-- Seed data
+
+-- Topics
 
 INSERT INTO topic (id, slug, title, description) VALUES
 (1, 'gauss-elimination',
