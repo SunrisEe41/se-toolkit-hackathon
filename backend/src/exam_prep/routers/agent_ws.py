@@ -32,7 +32,7 @@ class ChatResponse(BaseModel):
     reply: str
 
 
-@router.post("/exam/chat", response_model=ChatResponse)
+@router.post("/chat", response_model=ChatResponse)
 async def chat_post(
     req: ChatRequest,
     _key: str = Depends(verify_api_key),
