@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 interface Topic {
@@ -46,14 +46,11 @@ export function TheoryPage({ apiKey }: { apiKey: string }) {
         setError(e.message);
         setLoading(false);
       });
-  }, [selectedSlug]);
+  }, [selectedSlug, apiKey]);
 
-  // Simple markdown-like formatting
   function renderContent(text: string) {
     return text.split("\n").map((line, i) => {
-      // Bold: **text**
       let content = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      // Inline code
       content = content.replace(/`(.+?)`/g, "<code>$1</code>");
 
       if (line.startsWith("- ") || line.startsWith("* ")) {
@@ -72,15 +69,20 @@ export function TheoryPage({ apiKey }: { apiKey: string }) {
         );
       }
       if (line.trim() === "") return <br key={i} />;
-      return (
-        <p key={i} dangerouslySetInnerHTML={{ __html: content }} />
-      );
+      return <p key={i} dangerouslySetInnerHTML={{ __html: content }} />;
     });
   }
 
   return (
     <div className="theory-page">
       <h2>📚 Exam Theory</h2>
+      <p className="theory-intro">
+        Select a topic to review theory. Practice solving problems using the CLI
+        chat:{" "}
+        <code>
+          uv run nanobot agent --session cli:interactive -c config.json
+        </code>
+      </p>
 
       <div className="theory-topics">
         {topics.map((t) => (
@@ -98,14 +100,16 @@ export function TheoryPage({ apiKey }: { apiKey: string }) {
         <div className="theory-content">
           {loading && <p>Loading...</p>}
           {error && <p className="error">{error}</p>}
-          {!loading &&
-            !error &&
-            theory.map((th) => (
-              <div key={th.id} className="theory-card">
-                <h3>{th.title}</h3>
-                <div className="theory-text">{renderContent(th.content)}</div>
-              </div>
-            ))}
+          {!loading && !error && theory.length > 0 && (
+            <div className="theory-card">
+              {theory.map((th) => (
+                <div key={th.id}>
+                  <h3>{th.title}</h3>
+                  <div className="theory-text">{renderContent(th.content)}</div>
+                </div>
+              ))}
+            </div>
+          )}
           {!loading && !error && theory.length === 0 && (
             <p>No theory pages for this topic yet.</p>
           )}

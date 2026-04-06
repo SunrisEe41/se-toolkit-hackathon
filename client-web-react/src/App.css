@@ -117,7 +117,19 @@ tr:nth-child(even) {
 /* Theory page */
 
 .theory-page h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.theory-intro {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.theory-intro code {
+  background: #f0f0f0;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
 }
 
 .theory-topics {
@@ -171,8 +183,6 @@ tr:nth-child(even) {
 .theory-text ul {
   padding-left: 1.5rem;
 }
-
-/* Chat page */
 
 .chat-page {
   display: flex;
