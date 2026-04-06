@@ -7,6 +7,104 @@ interface Message {
   timestamp: number;
 }
 
+function MarkdownText({ text }: { text: string }) {
+  const html = parseMarkdown(text);
+  return <div className="md-content" dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+function parseMarkdown(text: string): string {
+  const lines = text.split("\n");
+  let result: string[] = [];
+  let inCode = false;
+  let codeBuf: string[] = [];
+  let codeLang = "";
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.startsWith("```")) {
+      if (inCode) {
+        // Close code block
+        result.push(
+          `<pre class="code-block"><code>${codeBuf.join("\n").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`
+        );
+        codeBuf = [];
+        codeLang = "";
+        inCode = false;
+      } else {
+        inCode = true;
+        codeLang = line.slice(3).trim();
+      }
+      continue;
+    }
+
+    if (inCode) {
+      codeBuf.push(line);
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^---+$/.test(line.trim())) {
+      result.push("<hr/>");
+      continue;
+    }
+
+    // Headers
+    if (line.startsWith("### ")) {
+      result.push(`<h4>${inlineFormat(line.slice(4))}</h4>`);
+      continue;
+    }
+    if (line.startsWith("## ")) {
+      result.push(`<h3>${inlineFormat(line.slice(3))}</h3>`);
+      continue;
+    }
+    if (line.startsWith("# ")) {
+      result.push(`<h2>${inlineFormat(line.slice(2))}</h2>`);
+      continue;
+    }
+
+    // Unordered list
+    if (/^[-*]\s/.test(line)) {
+      result.push(`<li>${inlineFormat(line.slice(2))}</li>`);
+      continue;
+    }
+
+    // Ordered list
+    const ordered = line.match(/^\d+\.\s(.*)/);
+    if (ordered) {
+      result.push(`<li>${inlineFormat(ordered[1])}</li>`);
+      continue;
+    }
+
+    // Empty line
+    if (line.trim() === "") {
+      result.push("<br/>");
+      continue;
+    }
+
+    result.push(`<p>${inlineFormat(line)}</p>`);
+  }
+
+  // Close unclosed code block
+  if (inCode && codeBuf.length > 0) {
+    result.push(
+      `<pre class="code-block"><code>${codeBuf.join("\n").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`
+    );
+  }
+
+  return result.join("\n");
+}
+
+function inlineFormat(text: string): string {
+  // Inline code
+  text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+  // Bold
+  text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  // Italic
+  text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  return text;
+}
+
 export function ChatPage({ apiKey }: { apiKey: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -75,7 +173,7 @@ export function ChatPage({ apiKey }: { apiKey: string }) {
         {messages.map((m, i) => (
           <div key={i} className={`msg ${m.role}`}>
             <strong>{m.role === "user" ? "You" : "Agent"}</strong>
-            <p>{m.text}</p>
+            <MarkdownText text={m.text} />
           </div>
         ))}
         {error && <p className="error">{error}</p>}

@@ -488,6 +488,45 @@ tr:nth-child(even) {
 .msg p {
   margin: 0;
   white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.msg p code.inline-code {
+  background: rgba(0,0,0,0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.md-content h2, .md-content h3, .md-content h4 {
+  margin: 0.75rem 0 0.25rem;
+}
+
+.md-content pre.code-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
+.md-content pre.code-block code {
+  font-family: "Consolas", "Monaco", monospace;
+}
+
+.md-content ul, .md-content ol {
+  padding-left: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.md-content hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 0.75rem 0;
 }
 
 .chat-input {
