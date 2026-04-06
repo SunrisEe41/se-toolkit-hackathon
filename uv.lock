@@ -590,20 +590,6 @@ wheels = [
 ]
 
 [[package]]
-name = "dulwich"
-version = "0.25.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ba/b8/9c9bc6ac66007f8090b1da9079c0e4bbea5aa9583c3c12098e0f11462dd5/dulwich-0.25.2.tar.gz", hash = "sha256:bca22c8aa4cbecbe8493b76e3fd6101513f09cf405cd9b92e116a48d9469e55a", size = 1126499, upload-time = "2026-01-11T22:04:47.667Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/ec/494f14d73346309e2e03fdd1fa82618d91bbc59423bbe8a6f6a7b20186ee/dulwich-0.25.2-cp314-cp314-android_24_arm64_v8a.whl", hash = "sha256:b1b54442dd8171fc5a1e0d5efc7d72b8192c88f738ee9d72e7aa82bf9d630832", size = 1437740, upload-time = "2026-01-11T22:04:42.297Z" },
-    { url = "https://files.pythonhosted.org/packages/c8/48/8448a48054f61e1c4c7c42f2ab29cdb576451545d2843651f69802ff15fb/dulwich-0.25.2-cp314-cp314-android_24_x86_64.whl", hash = "sha256:0ac0b70a970fac9b9c161ce2f1472915656c91e8fdb2dcfb1b5f84e6a127a184", size = 1437733, upload-time = "2026-01-11T22:04:43.978Z" },
-    { url = "https://files.pythonhosted.org/packages/87/eb/153b2b32dca090e956a1e512293db3c7c144db50da439373d1be56880512/dulwich-0.25.2-py3-none-any.whl", hash = "sha256:19dd5a0e08a47483be7f404e2555136a9ebaf70781fee3280457f8e2d65b2388", size = 650045, upload-time = "2026-01-11T22:04:45.398Z" },
-]
-
-[[package]]
 name = "fastapi"
 version = "0.128.7"
 source = { registry = "https://pypi.org/simple" }
@@ -1404,7 +1390,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "mcp-exam-prep", editable = "mcp/mcp-exam-prep" },
-    { name = "nanobot-ai" },
+    { name = "nanobot-ai", url = "https://github.com/HKUDS/nanobot/archive/e7d371ec1e6531b28898ec2c869ef338e8dd46ec.zip" },
     { name = "opentelemetry-distro", extras = ["otlp"], specifier = ">=0.61b0" },
     { name = "opentelemetry-exporter-otlp-proto-grpc", specifier = ">=1.40.0" },
     { name = "opentelemetry-instrumentation-logging", specifier = ">=0.61b0" },
@@ -1414,17 +1400,15 @@ requires-dist = [
 
 [[package]]
 name = "nanobot-ai"
-version = "0.1.5"
-source = { registry = "https://pypi.org/simple" }
+version = "0.1.4.post5"
+source = { url = "https://github.com/HKUDS/nanobot/archive/e7d371ec1e6531b28898ec2c869ef338e8dd46ec.zip" }
 dependencies = [
     { name = "anthropic" },
     { name = "chardet" },
     { name = "croniter" },
     { name = "ddgs" },
     { name = "dingtalk-stream" },
-    { name = "dulwich" },
     { name = "httpx" },
-    { name = "jinja2" },
     { name = "json-repair" },
     { name = "lark-oapi" },
     { name = "loguru" },
@@ -1450,10 +1434,53 @@ dependencies = [
     { name = "websocket-client" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/b5/d4f9db289f240480aaf3f8de625ebed0342021b2bf6699694130c2929012/nanobot_ai-0.1.5.tar.gz", hash = "sha256:006e32fd867750201e7be2ce086d905a91dded69a28bc34d4a593b0c8102fe2e", size = 299270, upload-time = "2026-04-06T11:34:27.959Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/0e/7438409856bb81c7458f6af12609a862d181668785d43de1b9bc1425a24f/nanobot_ai-0.1.5-py3-none-any.whl", hash = "sha256:561ece060d1cacfb27538ef77c07fc8c46d291a8dfc98797fa5bd25a237201bf", size = 332607, upload-time = "2026-04-06T11:34:26.139Z" },
+sdist = { hash = "sha256:577a1b2ac0b5b17a68b8664c3da5c7d548b9a41aeb39d08915108d5e63937bf4" }
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = ">=0.45.0,<1.0.0" },
+    { name = "chardet", specifier = ">=3.0.2,<6.0.0" },
+    { name = "croniter", specifier = ">=6.0.0,<7.0.0" },
+    { name = "ddgs", specifier = ">=9.5.5,<10.0.0" },
+    { name = "dingtalk-stream", specifier = ">=0.24.0,<1.0.0" },
+    { name = "httpx", specifier = ">=0.28.0,<1.0.0" },
+    { name = "json-repair", specifier = ">=0.57.0,<1.0.0" },
+    { name = "langsmith", marker = "extra == 'langsmith'", specifier = ">=0.1.0" },
+    { name = "lark-oapi", specifier = ">=1.5.0,<2.0.0" },
+    { name = "loguru", specifier = ">=0.7.3,<1.0.0" },
+    { name = "matrix-nio", extras = ["e2e"], marker = "extra == 'matrix'", specifier = ">=0.25.2" },
+    { name = "mcp", specifier = ">=1.26.0,<2.0.0" },
+    { name = "mistune", marker = "extra == 'matrix'", specifier = ">=3.0.0,<4.0.0" },
+    { name = "msgpack", specifier = ">=1.1.0,<2.0.0" },
+    { name = "nh3", marker = "extra == 'matrix'", specifier = ">=0.2.17,<1.0.0" },
+    { name = "oauth-cli-kit", specifier = ">=0.1.3,<1.0.0" },
+    { name = "openai", specifier = ">=2.8.0" },
+    { name = "prompt-toolkit", specifier = ">=3.0.50,<4.0.0" },
+    { name = "pycryptodome", marker = "extra == 'weixin'", specifier = ">=3.20.0" },
+    { name = "pydantic", specifier = ">=2.12.0,<3.0.0" },
+    { name = "pydantic-settings", specifier = ">=2.12.0,<3.0.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.0,<10.0.0" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.3.0,<2.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.0.0,<7.0.0" },
+    { name = "python-socketio", specifier = ">=5.16.0,<6.0.0" },
+    { name = "python-socks", extras = ["asyncio"], specifier = ">=2.8.0,<3.0.0" },
+    { name = "python-telegram-bot", extras = ["socks"], specifier = ">=22.6,<23.0" },
+    { name = "qq-botpy", specifier = ">=1.2.0,<2.0.0" },
+    { name = "qrcode", extras = ["pil"], marker = "extra == 'weixin'", specifier = ">=8.0" },
+    { name = "questionary", specifier = ">=2.0.0,<3.0.0" },
+    { name = "readability-lxml", specifier = ">=0.8.4,<1.0.0" },
+    { name = "rich", specifier = ">=14.0.0,<15.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "slack-sdk", specifier = ">=3.39.0,<4.0.0" },
+    { name = "slackify-markdown", specifier = ">=0.2.0,<1.0.0" },
+    { name = "socksio", specifier = ">=1.0.0,<2.0.0" },
+    { name = "tiktoken", specifier = ">=0.12.0,<1.0.0" },
+    { name = "typer", specifier = ">=0.20.0,<1.0.0" },
+    { name = "websocket-client", specifier = ">=1.9.0,<2.0.0" },
+    { name = "websockets", specifier = ">=16.0,<17.0" },
+    { name = "wecom-aibot-sdk-python", marker = "extra == 'wecom'", specifier = ">=0.1.5" },
 ]
+provides-extras = ["wecom", "weixin", "matrix", "langsmith", "dev"]
 
 [[package]]
 name = "nodeenv"
