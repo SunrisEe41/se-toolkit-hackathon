@@ -5,6 +5,7 @@ description = "LMS Backend API"
 requires-python = "==3.14.*"
 dependencies = [
   "asyncpg>=0.30.0",
+  "psycopg2-binary>=2.9.0",
   "opentelemetry-distro[otlp]>=0.61b0",
   "opentelemetry-exporter-otlp-proto-grpc>=1.40.0",
   "opentelemetry-instrumentation-fastapi>=0.61b0",
@@ -21,10 +22,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-  "aiosqlite>=0.21.0",
-  "greenlet>=3.2.0",
-]
+dev = ["aiosqlite>=0.21.0", "greenlet>=3.2.0"]
 
 [build-system]
 requires = ["setuptools>=75.0"]
@@ -35,4 +33,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["lms_backend*"]
+include = ["lms_backend*", "exam_prep*"]

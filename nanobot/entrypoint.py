@@ -20,8 +20,12 @@ class Settings(BaseSettings):
     llm_api_key: str = Field(..., alias="LLM_API_KEY")
     llm_api_base_url: str = Field(..., alias="LLM_API_BASE_URL")
 
-    nanobot_gateway_container_address: str = Field(..., alias="NANOBOT_GATEWAY_CONTAINER_ADDRESS")
-    nanobot_gateway_container_port: int = Field(..., alias="NANOBOT_GATEWAY_CONTAINER_PORT")
+    nanobot_gateway_container_address: str = Field(
+        ..., alias="NANOBOT_GATEWAY_CONTAINER_ADDRESS"
+    )
+    nanobot_gateway_container_port: int = Field(
+        ..., alias="NANOBOT_GATEWAY_CONTAINER_PORT"
+    )
 
     # Task 2B — uncomment after you add the webchat channel.
     # nanobot_webchat_container_address: str = Field(..., alias="NANOBOT_WEBCHAT_CONTAINER_ADDRESS")
@@ -29,6 +33,9 @@ class Settings(BaseSettings):
 
     nanobot_lms_backend_url: str = Field(..., alias="NANOBOT_LMS_BACKEND_URL")
     nanobot_lms_api_key: str = Field(..., alias="NANOBOT_LMS_API_KEY")
+
+    nanobot_exam_backend_url: str = Field(..., alias="NANOBOT_EXAM_BACKEND_URL")
+    nanobot_exam_api_key: str = Field(..., alias="NANOBOT_EXAM_API_KEY")
 
     # Task 3 — uncomment after you add mcp-obs.
     # nanobot_victorialogs_url: str = Field(..., alias="NANOBOT_VICTORIALOGS_URL")
@@ -88,6 +95,15 @@ def _resolve_config() -> Config:
             **_otel_env(env, "mcp-lms"),
         },
     )
+    config.tools.mcp_servers["exam"] = MCPServerConfig(
+        command="opentelemetry-instrument",
+        args=["python", "-m", "mcp_exam_prep"],
+        env={
+            "NANOBOT_EXAM_BACKEND_URL": env.nanobot_exam_backend_url,
+            "NANOBOT_EXAM_API_KEY": env.nanobot_exam_api_key,
+            **_otel_env(env, "mcp-exam-prep"),
+        },
+    )
     # Task 3 — uncomment after you add mcp-obs.
     # config.tools.mcp_servers["obs"] = MCPServerConfig(
     #     command="opentelemetry-instrument",
@@ -115,10 +131,7 @@ def _resolve_config() -> Config:
 def main() -> None:
     config = _resolve_config()
     RESOLVED_CONFIG_PATH.write_text(
-        json.dumps(
-            config.model_dump(mode="json", by_alias=True), indent=2
-        )
-        + "\n",
+        json.dumps(config.model_dump(mode="json", by_alias=True), indent=2) + "\n",
         encoding="utf-8",
     )
     os.execvp(
