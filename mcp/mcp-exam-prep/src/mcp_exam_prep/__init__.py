@@ -43,6 +43,17 @@ class ExamClient:
             resp.raise_for_status()
             return resp.json()
 
+    async def post(self, path: str, body: dict) -> dict:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                self._url(path),
+                json=body,
+                headers=self._headers,
+                timeout=15.0,
+            )
+            resp.raise_for_status()
+            return resp.json()
+
 
 # ── Schemas ────────────────────────────────────────────────────────────────────
 
@@ -64,6 +75,21 @@ class CheckAnswerArgs(BaseModel):
 class GetTheoryArgs(BaseModel):
     topic_id: int | None = Field(default=None, description="Topic ID (integer)")
     topic_slug: str | None = Field(default=None, description="Topic slug (string)")
+
+
+class SubmitAnswerArgs(BaseModel):
+    student_id: str = Field(description="Student identifier (name or email)")
+    task_id: int = Field(description="Task ID to submit")
+    user_answer: str = Field(description="Student's answer text")
+
+
+class GetProgressArgs(BaseModel):
+    student_id: str = Field(description="Student identifier")
+
+
+class StartExamArgs(BaseModel):
+    student_id: str = Field(description="Student identifier")
+    num_tasks: int = Field(default=5, description="Number of tasks for the exam")
 
 
 # ── ToolSpec ───────────────────────────────────────────────────────────────────
@@ -128,6 +154,29 @@ async def _exam_get_theory(client: ExamClient, args: GetTheoryArgs) -> ToolPaylo
     return await client.get("exam/theory/")
 
 
+async def _exam_submit_answer(
+    client: ExamClient, args: SubmitAnswerArgs
+) -> ToolPayload:
+    body = {
+        "student_id": args.student_id,
+        "task_id": args.task_id,
+        "user_answer": args.user_answer,
+    }
+    return await client.post("exam/progress/submit", body=body)
+
+
+async def _exam_get_progress(client: ExamClient, args: GetProgressArgs) -> ToolPayload:
+    return await client.get(f"exam/progress/{args.student_id}")
+
+
+async def _exam_start_exam_mode(client: ExamClient, args: StartExamArgs) -> ToolPayload:
+    body = {
+        "student_id": args.student_id,
+        "num_tasks": args.num_tasks,
+    }
+    return await client.post("exam/progress/exam-mode", body=body)
+
+
 TOOL_SPECS: tuple[ToolSpec, ...] = (
     ToolSpec(
         "exam_list_topics",
@@ -158,6 +207,24 @@ TOOL_SPECS: tuple[ToolSpec, ...] = (
         "Check exam prep API health. Returns counts of topics, tasks, and theory pages.",
         NoArgs,
         _exam_health,
+    ),
+    ToolSpec(
+        "exam_submit_answer",
+        "Submit an answer for a task. Records the attempt and returns whether it was correct.",
+        SubmitAnswerArgs,
+        _exam_submit_answer,
+    ),
+    ToolSpec(
+        "exam_get_progress",
+        "Get progress stats for a student: total attempts, correct/wrong count, accuracy, topics.",
+        GetProgressArgs,
+        _exam_get_progress,
+    ),
+    ToolSpec(
+        "exam_start_exam_mode",
+        "Start exam mode: pick N random tasks from all topics without showing answers.",
+        StartExamArgs,
+        _exam_start_exam_mode,
     ),
 )
 
