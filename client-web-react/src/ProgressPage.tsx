@@ -34,7 +34,6 @@ export function ProgressPage({ apiKey, studentId }: { apiKey: string; studentId:
 
   return (
     <div className="progress-page">
-      <h2>📊 Your Progress</h2>
 
       {!studentId && (
         <p className="no-data">Enter your name/ID in the header above to view progress.</p>

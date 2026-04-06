@@ -106,9 +106,29 @@ tr:nth-child(even) { background: #fafafa; }
   border-color: #3b82f6;
 }
 
+/* Page layout */
+.theory-page,
+.progress-page,
+.exam-page {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
 /* Theory page */
-.theory-page h2 { margin-bottom: 0.5rem; font-size: 1.4rem; }
-.theory-intro { color: #666; margin-bottom: 1.5rem; font-size: 1rem; }
+.theory-page h2,
+.exam-page h2,
+.progress-page h2,
+.chat-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.theory-intro {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
 .theory-intro code {
   background: #f0f0f0;
   padding: 0.15rem 0.4rem;
@@ -125,27 +145,39 @@ tr:nth-child(even) { background: #fafafa; }
 
 .theory-topics button {
   padding: 0.6rem 1.1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
   background: #fff;
   cursor: pointer;
   font-size: 0.95rem;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
+
+.theory-topics button:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
 .theory-topics button.active {
   background: #3b82f6;
   color: #fff;
   border-color: #3b82f6;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.3);
 }
 
 .theory-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+  border: none;
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
   background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-top: 3px solid #3b82f6;
 }
-.theory-card h3 { margin-top: 0; color: #1e3a5f; font-size: 1.2rem; }
-.theory-text p { line-height: 1.7; margin: 0.5rem 0; font-size: 1rem; }
+
+.theory-card h3 { margin-top: 0; color: #1e3a5f; font-size: 1.25rem; }
+.theory-text p { line-height: 1.7; margin: 0.5rem 0; font-size: 1.05rem; }
 .theory-text code {
   background: #f0f0f0;
   padding: 0.1rem 0.3rem;
@@ -156,7 +188,15 @@ tr:nth-child(even) { background: #fafafa; }
 .theory-text ol, .theory-text ul { padding-left: 1.5rem; }
 
 /* Progress page */
-.progress-page h2 { font-size: 1.4rem; }
+.progress-page {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.progress-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
 .progress-form {
   display: flex;
   gap: 0.5rem;
@@ -194,10 +234,17 @@ tr:nth-child(even) { background: #fafafa; }
 
 .stat-card {
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 .stat-value { display: block; font-size: 2.2rem; font-weight: 700; }
 .stat-label { font-size: 0.9rem; color: #666; }
@@ -594,16 +641,25 @@ tr:nth-child(even) { background: #fafafa; }
 }
 
 /* Exam page */
+.exam-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .exam-page h2 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .exam-setup {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
 .exam-setup label {
@@ -681,6 +737,8 @@ tr:nth-child(even) { background: #fafafa; }
 
 .exam-task {
   margin-bottom: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  border-top: 3px solid #8b5cf6;
 }
 
 .exam-task textarea {
