@@ -1,23 +1,25 @@
 """MCP server for the Exam Prep API."""
 
+from __future__ import annotations
+
+import asyncio
 import json
-import logging
-from contextlib import asynccontextmanager
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 
 import httpx
 from mcp.server import Server
+from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
+from pydantic import BaseModel, Field
 
-from mcp_exam_prep.models import (
-    TaskResult,
-    TheoryResult,
-    TopicResult,
-)
-from mcp_exam_prep.settings import Settings
+from mcp_exam_prep.settings import settings
 
-logger = logging.getLogger(__name__)
+ToolPayload = BaseModel | list[BaseModel]
+ToolHandler = Callable[["ExamClient", BaseModel], Awaitable[ToolPayload]]
 
-settings = Settings()
+
+# ── Client ─────────────────────────────────────────────────────────────────────
 
 
 class ExamClient:
@@ -30,7 +32,7 @@ class ExamClient:
     def _url(self, path: str) -> str:
         return f"{self._base_url}/{path.lstrip('/')}"
 
-    async def get(self, path: str, params: dict | None = None) -> dict:
+    async def get(self, path: str, params: dict | None = None) -> dict | list:
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 self._url(path),
@@ -42,134 +44,175 @@ class ExamClient:
             return resp.json()
 
 
-# ── Tool definitions ──────────────────────────────────────────────────────────
+# ── Schemas ────────────────────────────────────────────────────────────────────
 
-TOOLS: list[Tool] = [
-    Tool(
-        name="exam_list_topics",
-        description="List all available exam topics with their slugs, titles, and descriptions.",
+
+class NoArgs(BaseModel):
+    pass
+
+
+class GetTaskArgs(BaseModel):
+    topic_id: int | None = Field(default=None, description="Topic ID (integer)")
+    topic_slug: str | None = Field(default=None, description="Topic slug (string)")
+
+
+class CheckAnswerArgs(BaseModel):
+    task_id: int = Field(description="Task ID to check")
+    answer_text: str = Field(description="Student's answer")
+
+
+class GetTheoryArgs(BaseModel):
+    topic_id: int | None = Field(default=None, description="Topic ID (integer)")
+    topic_slug: str | None = Field(default=None, description="Topic slug (string)")
+
+
+# ── ToolSpec ───────────────────────────────────────────────────────────────────
+
+
+@dataclass(frozen=True, slots=True)
+class ToolSpec:
+    name: str
+    description: str
+    model: type[BaseModel]
+    handler: ToolHandler
+
+    def as_tool(self) -> Tool:
+        schema = self.model.model_json_schema()
+        schema.pop("$defs", None)
+        schema.pop("title", None)
+        return Tool(name=self.name, description=self.description, inputSchema=schema)
+
+
+# ── Handlers ───────────────────────────────────────────────────────────────────
+
+
+async def _exam_health(client: ExamClient, _args: BaseModel) -> ToolPayload:
+    return await client.get("exam/health/")
+
+
+async def _exam_list_topics(client: ExamClient, _args: BaseModel) -> ToolPayload:
+    return await client.get("exam/topics/")
+
+
+async def _exam_get_task(client: ExamClient, args: GetTaskArgs) -> ToolPayload:
+    params = {}
+    if args.topic_id is not None:
+        params["topic_id"] = args.topic_id
+    return await client.get("exam/tasks/random", params=params or None)
+
+
+async def _exam_check_answer(client: ExamClient, args: CheckAnswerArgs) -> ToolPayload:
+    all_tasks = await client.get("exam/tasks/")
+    task = None
+    for t in all_tasks:
+        if t["id"] == args.task_id:
+            task = t
+            break
+    if task is None:
+        return {"error": f"Task {args.task_id} not found."}
+    correct = task["answer"].strip().lower() == args.answer_text.strip().lower()
+    return {
+        "task_id": args.task_id,
+        "student_answer": args.answer_text,
+        "correct_answer": task["answer"],
+        "is_correct": correct,
+        "explanation": task.get("explanation", ""),
+    }
+
+
+async def _exam_get_theory(client: ExamClient, args: GetTheoryArgs) -> ToolPayload:
+    if args.topic_slug:
+        return await client.get(f"exam/theory/{args.topic_slug}")
+    elif args.topic_id is not None:
+        return await client.get("exam/theory/", params={"topic_id": args.topic_id})
+    return await client.get("exam/theory/")
+
+
+TOOL_SPECS: tuple[ToolSpec, ...] = (
+    ToolSpec(
+        "exam_list_topics",
+        "List all available exam topics with their slugs, titles, and descriptions.",
+        NoArgs,
+        _exam_list_topics,
     ),
-    Tool(
-        name="exam_get_task",
-        description=(
-            "Get a random task for a given topic. Use topic_id (integer) or topic_slug (string). "
-            "Returns the question, difficulty, and correct answer with explanation."
-        ),
+    ToolSpec(
+        "exam_get_task",
+        "Get a random task for a given topic. Use topic_id (integer) or topic_slug (string).",
+        GetTaskArgs,
+        _exam_get_task,
     ),
-    Tool(
-        name="exam_check_answer",
-        description=(
-            "Check if a student's answer matches the expected answer for a given task. "
-            "Provide task_id and the student's answer_text. Returns whether the answer is correct."
-        ),
+    ToolSpec(
+        "exam_check_answer",
+        "Check if a student's answer matches the expected answer for a given task.",
+        CheckAnswerArgs,
+        _exam_check_answer,
     ),
-    Tool(
-        name="exam_get_theory",
-        description=(
-            "Get theory pages for a topic. Provide topic_id (integer) or topic_slug (string). "
-            "Returns title and content of each theory page."
-        ),
+    ToolSpec(
+        "exam_get_theory",
+        "Get theory pages for a topic. Provide topic_id (integer) or topic_slug (string).",
+        GetTheoryArgs,
+        _exam_get_theory,
     ),
-    Tool(
-        name="exam_health",
-        description="Check exam prep API health. Returns counts of topics, tasks, and theory pages.",
+    ToolSpec(
+        "exam_health",
+        "Check exam prep API health. Returns counts of topics, tasks, and theory pages.",
+        NoArgs,
+        _exam_health,
     ),
-]
+)
 
-
-async def handle_tool(name: str, arguments: dict) -> list[TextContent]:
-    client = ExamClient(settings.backend_url, settings.api_key)
-
-    if name == "exam_list_topics":
-        topics = await client.get("exam/topics/")
-        return [TextContent(type="text", text=json.dumps(topics, indent=2, ensure_ascii=False))]
-
-    elif name == "exam_get_task":
-        topic_id = arguments.get("topic_id")
-        topic_slug = arguments.get("topic_slug")
-        params = {}
-        if topic_id is not None:
-            params["topic_id"] = int(topic_id)
-        task = await client.get("exam/tasks/random", params=params if params else None)
-        return [TextContent(type="text", text=json.dumps(task, indent=2, ensure_ascii=False))]
-
-    elif name == "exam_check_answer":
-        task_id = arguments.get("task_id")
-        answer_text = arguments.get("answer_text", "")
-        # Fetch the task to get the correct answer
-        all_tasks = await client.get("exam/tasks/", params={"topic_id": 1})  # we need by id
-        # Find by id in the list
-        task = None
-        for t in all_tasks:
-            if t["id"] == int(task_id):
-                task = t
-                break
-        if task is None:
-            # Try fetching all tasks without filter
-            all_tasks = await client.get("exam/tasks/")
-            for t in all_tasks:
-                if t["id"] == int(task_id):
-                    task = t
-                    break
-        if task is None:
-            return [TextContent(type="text", text=f"Task {task_id} not found.")]
-        # Simple comparison — the LLM will do fuzzy matching
-        correct = task["answer"].strip().lower() == answer_text.strip().lower()
-        result = {
-            "task_id": task_id,
-            "student_answer": answer_text,
-            "correct_answer": task["answer"],
-            "is_correct": correct,
-            "explanation": task.get("explanation", ""),
-        }
-        return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
-
-    elif name == "exam_get_theory":
-        topic_id = arguments.get("topic_id")
-        topic_slug = arguments.get("topic_slug")
-        if topic_slug:
-            items = await client.get(f"exam/theory/{topic_slug}")
-        elif topic_id:
-            items = await client.get("exam/theory/", params={"topic_id": int(topic_id)})
-        else:
-            items = await client.get("exam/theory/")
-        return [TextContent(type="text", text=json.dumps(items, indent=2, ensure_ascii=False))]
-
-    elif name == "exam_health":
-        health = await client.get("exam/health/")
-        return [TextContent(type="text", text=json.dumps(health, indent=2, ensure_ascii=False))]
-
-    else:
-        return [TextContent(type="text", text=f"Unknown tool: {name}")]
+TOOLS_BY_NAME = {spec.name: spec for spec in TOOL_SPECS}
 
 
 # ── Server ─────────────────────────────────────────────────────────────────────
 
 
-def create_server() -> Server:
+def _text(data: ToolPayload) -> list[TextContent]:
+    if isinstance(data, BaseModel):
+        payload = data.model_dump()
+    else:
+        payload = data
+    return [
+        TextContent(type="text", text=json.dumps(payload, ensure_ascii=False, indent=2))
+    ]
+
+
+def create_server(client: ExamClient) -> Server:
     server = Server("exam-prep")
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
-        return TOOLS
+        return [spec.as_tool() for spec in TOOL_SPECS]
 
     @server.call_tool()
     async def call_tool(name: str, arguments: dict) -> list[TextContent]:
-        return await handle_tool(name, arguments)
+        spec = TOOLS_BY_NAME.get(name)
+        if spec is None:
+            return [TextContent(type="text", text=f"Unknown tool: {name}")]
+        try:
+            args = spec.model.model_validate(arguments or {})
+            return _text(await spec.handler(client, args))
+        except Exception as exc:
+            return [
+                TextContent(type="text", text=f"Error: {type(exc).__name__}: {exc}")
+            ]
 
+    _ = list_tools, call_tool
     return server
 
 
-def main():
-    import asyncio
-    from mcp.server.stdio import stdio_server
+async def main() -> None:
+    client = ExamClient(settings.backend_url, settings.api_key)
+    server = create_server(client)
+    async with stdio_server() as (read_stream, write_stream):
+        await server.run(
+            read_stream, write_stream, server.create_initialization_options()
+        )
 
-    server = create_server()
-    async def run():
-        async with stdio_server() as (read_stream, write_stream):
-            await server.run(read_stream, write_stream, server.create_initialization_options())
-    asyncio.run(run())
+
+def run():
+    asyncio.run(main())
 
 
 if __name__ == "__main__":
-    main()
+    run()
