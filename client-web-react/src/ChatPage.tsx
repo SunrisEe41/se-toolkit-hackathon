@@ -7,85 +7,47 @@ interface Message {
   timestamp: number;
 }
 
-export function ChatPage({ wsUrl }: { wsUrl?: string }) {
-  const [chatKey, setChatKey] = useState(
-    () => localStorage.getItem("chat_key") ?? ""
-  );
+export function ChatPage({ apiKey }: { apiKey: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [buffer, setBuffer] = useState("");
-  const [draft, setDraft] = useState("");
-  const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const bufferRef = useRef("");
 
   useEffect(() => {
-    if (!wsUrl || !chatKey) return;
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      setConnected(true);
-      setError("");
-      // Send auth
-      ws.send(JSON.stringify({ type: "auth", token: chatKey }));
-    };
-
-    ws.onclose = () => setConnected(false);
-
-    ws.onmessage = (event) => {
-      let text = event.data;
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "auth_ok") {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", text: "Connected! How can I help you today?", timestamp: Date.now() },
-          ]);
-          return;
-        }
-        if (data.type === "chunk") {
-          text = data.delta || "";
-        } else if (data.type === "done") {
-          // Commit buffer as final message
-          if (bufferRef.current) {
-            setMessages((prev) => [
-              ...prev,
-              { role: "assistant", text: bufferRef.current, timestamp: Date.now() },
-            ]);
-            bufferRef.current = "";
-            setBuffer("");
-          }
-          return;
-        } else if (data.type === "error") {
-          setError(text);
-          return;
-        }
-      } catch {
-        // Plain text
-      }
-
-      // Accumulate streaming text
-      bufferRef.current += text;
-      setBuffer(bufferRef.current);
-    };
-
-    ws.onerror = () => setError("Cannot connect to agent. Check WebSocket URL.");
-
-    return () => ws.close();
-  }, [wsUrl, chatKey]);
-
-  const send = () => {
-    if (!input.trim() || !wsRef.current || wsRef.current.readyState !== 1) return;
+  const send = async () => {
+    if (!input.trim() || loading) return;
     const text = input.trim();
     setInput("");
-    setBuffer("");
-    bufferRef.current = "";
+    setError("");
+    setLoading(true);
+
     setMessages((prev) => [...prev, { role: "user", text, timestamp: Date.now() }]);
-    wsRef.current.send(JSON.stringify({ type: "message", text }));
+
+    try {
+      const resp = await fetch("/exam/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ message: text }),
+      });
+
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: data.reply, timestamp: Date.now() },
+      ]);
+    } catch (e: any) {
+      setError(e.message || "Failed to send message");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -95,75 +57,34 @@ export function ChatPage({ wsUrl }: { wsUrl?: string }) {
     }
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, buffer]);
-
-  if (!chatKey) {
-    return (
-      <div className="chat-page chat-setup">
-        <h2>🤖 Exam Prep Agent</h2>
-        <p>Enter your API key to connect to the agent.</p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const trimmed = draft.trim();
-            if (trimmed) {
-              localStorage.setItem("chat_key", trimmed);
-              setChatKey(trimmed);
-            }
-          }}
-        >
-          <input
-            type="password"
-            placeholder="API Key"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-          />
-          <button type="submit">Connect</button>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div className="chat-page">
       <div className="chat-header">
         <h2>🤖 Exam Prep Agent</h2>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <span className={connected ? "status on" : "status off"}>
-            {connected ? "Connected" : "Disconnected"}
-          </span>
-          <button
-            className="btn-disconnect"
-            onClick={() => {
-              wsRef.current?.close();
-              setChatKey("");
-              setMessages([]);
-              setConnected(false);
-              setDraft("");
-            }}
-            style={{ padding: "0.2rem 0.6rem", fontSize: "0.8rem" }}
-          >
-            Disconnect
-          </button>
-        </div>
+        <span className="status on">Online</span>
       </div>
 
       <div className="chat-messages">
+        {messages.length === 0 && (
+          <p className="chat-hint">
+            Ask me anything about analytical geometry or linear algebra! Try:
+            <br />
+            <code>"Give me a practice problem"</code> or <code>"Explain eigenvalues"</code>
+          </p>
+        )}
         {messages.map((m, i) => (
           <div key={i} className={`msg ${m.role}`}>
             <strong>{m.role === "user" ? "You" : "Agent"}</strong>
             <p>{m.text}</p>
           </div>
         ))}
-        {buffer && (
-          <div className="msg assistant streaming">
+        {error && <p className="error">{error}</p>}
+        {loading && (
+          <div className="msg assistant">
             <strong>Agent</strong>
-            <p>{buffer}</p>
+            <p className="typing">Thinking...</p>
           </div>
         )}
-        {error && <p className="error">{error}</p>}
         <div ref={messagesEndRef} />
       </div>
 
@@ -172,12 +93,12 @@ export function ChatPage({ wsUrl }: { wsUrl?: string }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKey}
-          placeholder={connected ? "Ask for a task, submit an answer, or request theory..." : "Connecting..."}
-          disabled={!connected}
+          placeholder="Ask for a task, theory, or help..."
+          disabled={loading}
           rows={2}
         />
-        <button onClick={send} disabled={!connected}>
-          Send
+        <button onClick={send} disabled={loading || !input.trim()}>
+          {loading ? "..." : "Send"}
         </button>
       </div>
     </div>

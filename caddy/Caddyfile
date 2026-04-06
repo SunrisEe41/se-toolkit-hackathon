@@ -39,12 +39,6 @@
             header_up Connection "upgrade"
         }
     }
-    handle /ws/chat {
-        reverse_proxy http://nanobot:{$NANOBOT_GATEWAY_CONTAINER_PORT} {
-            header_up Upgrade $http_upgrade
-            header_up Connection "upgrade"
-        }
-    }
     handle /utils/pgadmin* {
         reverse_proxy http://pgadmin:{$CONST_PGADMIN_CONTAINER_PORT}
     }

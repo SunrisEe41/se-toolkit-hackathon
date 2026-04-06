@@ -6,20 +6,12 @@ import "./App.css";
 
 const STORAGE_KEY = "api_key";
 
-// Auto-detect WebSocket URL from current origin
-function defaultWsUrl(): string {
-  if (typeof window === "undefined") return "";
-  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return `${proto}//${window.location.host}/ws/agent`;
-}
-
 type Page = "theory" | "progress" | "chat";
 
 function App() {
   const [token, setToken] = useState(
     () => localStorage.getItem(STORAGE_KEY) ?? ""
   );
-  const [wsUrl, setWsUrl] = useState(defaultWsUrl);
   const [draft, setDraft] = useState("");
   const [page, setPage] = useState<Page>("theory");
 
@@ -76,7 +68,7 @@ function App() {
       </header>
 
       {page === "theory" && <TheoryPage apiKey={token} />}
-      {page === "chat" && <ChatPage wsUrl={wsUrl} />}
+      {page === "chat" && <ChatPage apiKey={token} />}
       {page === "progress" && <ProgressPage apiKey={token} />}
     </div>
   );

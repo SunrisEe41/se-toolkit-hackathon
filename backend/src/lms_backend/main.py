@@ -143,5 +143,5 @@ app.include_router(
     dependencies=[Depends(verify_api_key)],
 )
 
-# Agent WebSocket — no auth dependency (auth handled inside WS)
-app.include_router(exam_agent.router)
+# Agent chat endpoint — uses API key auth
+app.include_router(exam_agent.router, prefix="/exam", tags=["exam-prep"])
