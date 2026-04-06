@@ -77,11 +77,9 @@ export function TheoryPage({ apiKey }: { apiKey: string }) {
     <div className="theory-page">
       <h2>📚 Exam Theory</h2>
       <p className="theory-intro">
-        Select a topic to review theory. Practice solving problems using the CLI
-        chat:{" "}
-        <code>
-          uv run nanobot agent --session cli:interactive -c config.json
-        </code>
+        Select a topic to review theory. Ready to practice? Go to the{" "}
+        <strong>Exam</strong> tab for structured tasks or <strong>Chat</strong>{" "}
+        to get personalized help from the AI agent.
       </p>
 
       <div className="theory-topics">

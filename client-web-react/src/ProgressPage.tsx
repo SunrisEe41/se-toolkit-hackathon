@@ -85,9 +85,9 @@ export function ProgressPage({ apiKey, studentId }: { apiKey: string; studentId:
 
       {progress && progress.total_attempts === 0 && (
         <p className="no-data">
-          No attempts yet. Start practicing in the CLI:
-          <br />
-          <code>uv run nanobot agent -c config.json</code>
+          No attempts yet. Head to the <strong>Exam</strong> tab for structured tasks
+          or the <strong>Chat</strong> tab to practice with the AI agent — your
+          progress will appear here automatically.
         </p>
       )}
     </div>
