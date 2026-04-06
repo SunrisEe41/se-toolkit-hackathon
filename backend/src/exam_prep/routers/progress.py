@@ -54,17 +54,20 @@ def get_progress(
     session: Session = Depends(get_session),
 ):
     """Get progress stats for a student."""
-    attempts = session.exec(
-        select(AttemptRecord).where(AttemptRecord.student_id == student_id)
-    ).all()
+    stmt = (
+        select(AttemptRecord, TaskRecord.topic_id)
+        .join(TaskRecord, TaskRecord.id == AttemptRecord.task_id)
+        .where(AttemptRecord.student_id == student_id)
+    )
+    rows = session.exec(stmt).all()
 
-    total = len(attempts)
-    correct = sum(1 for a in attempts if a.is_correct)
+    total = len(rows)
+    correct = sum(1 for a, _ in rows if a.is_correct)
     wrong = total - correct
     accuracy = correct / total if total > 0 else 0.0
 
-    topics_attempted = list({a.task_id for a in attempts})
-    topics_solved = list({a.task_id for a in attempts if a.is_correct})
+    topics_attempted = list({t for _, t in rows})
+    topics_solved = list({t for a, t in rows if a.is_correct})
 
     return ProgressRead(
         student_id=student_id,
