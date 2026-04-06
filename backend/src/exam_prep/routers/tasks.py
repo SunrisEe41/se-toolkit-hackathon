@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[TaskRead])
-async def list_tasks(
+def list_tasks(
     *,
     topic_id: int | None = None,
     session: Session = Depends(get_session),
@@ -36,7 +36,7 @@ async def list_tasks(
 
 
 @router.get("/random", response_model=TaskRead)
-async def get_random_task(
+def get_random_task(
     *,
     topic_id: int | None = None,
     session: Session = Depends(get_session),

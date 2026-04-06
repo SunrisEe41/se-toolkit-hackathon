@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/")
-async def health(*, session: Session = Depends(get_session)):
+def health(*, session: Session = Depends(get_session)):
     """Exam prep health check with counts."""
     topic_count = session.exec(select(col(TopicRecord.id))).all()
     task_count = session.exec(select(col(TaskRecord.id))).all()

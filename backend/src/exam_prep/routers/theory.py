@@ -5,12 +5,13 @@ from sqlmodel import Session, select
 
 from exam_prep.database import get_session
 from exam_prep.models.theory import TheoryRead, TheoryRecord
+from exam_prep.models.topic import TopicRecord
 
 router = APIRouter()
 
 
 @router.get("/", response_model=list[TheoryRead])
-async def list_theory(
+def list_theory(
     *,
     topic_id: int | None = None,
     session: Session = Depends(get_session),
@@ -27,14 +28,12 @@ async def list_theory(
 
 
 @router.get("/{topic_slug}", response_model=list[TheoryRead])
-async def get_theory_by_topic(
+def get_theory_by_topic(
     *,
     topic_slug: str,
     session: Session = Depends(get_session),
 ):
     """Get theory pages for a specific topic (by slug)."""
-    from exam_prep.models.topic import TopicRecord
-
     topic = session.exec(
         select(TopicRecord).where(TopicRecord.slug == topic_slug)
     ).first()

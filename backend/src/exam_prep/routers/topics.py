@@ -1,6 +1,6 @@
 """Topic endpoints."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from exam_prep.database import get_session
@@ -10,10 +10,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[TopicRead])
-async def list_topics(
-    *,
-    session: Session = Depends(get_session),
-):
+def list_topics(*, session: Session = Depends(get_session)):
     """List all available topics."""
     topics = session.exec(select(TopicRecord)).all()
     return [
@@ -23,15 +20,16 @@ async def list_topics(
 
 
 @router.get("/{topic_slug}", response_model=TopicRead)
-async def get_topic(
+def get_topic(
     *,
     topic_slug: str,
     session: Session = Depends(get_session),
 ):
     """Get a single topic by slug."""
-    topic = session.exec(select(TopicRecord).where(TopicRecord.slug == topic_slug)).first()
+    topic = session.exec(
+        select(TopicRecord).where(TopicRecord.slug == topic_slug)
+    ).first()
     if topic is None:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Topic not found")
     return TopicRead(
         id=topic.id, slug=topic.slug, title=topic.title, description=topic.description
