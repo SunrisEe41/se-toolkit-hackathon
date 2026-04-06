@@ -12,7 +12,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
 from lms_backend.auth import verify_api_key
-from lms_backend.routers import analytics, interactions, items, learners, pipeline
+from lms_backend.routers import items
 from lms_backend.settings import settings
 from exam_prep.routers import health as exam_health, tasks, theory, topics
 
@@ -97,36 +97,6 @@ app.include_router(
     items.router,
     prefix="/items",
     tags=["items"],
-    dependencies=[Depends(verify_api_key)],
-)
-
-if settings.enable_interactions:
-    app.include_router(
-        interactions.router,
-        prefix="/interactions",
-        tags=["interactions"],
-        dependencies=[Depends(verify_api_key)],
-    )
-
-if settings.enable_learners:
-    app.include_router(
-        learners.router,
-        prefix="/learners",
-        tags=["learners"],
-        dependencies=[Depends(verify_api_key)],
-    )
-
-app.include_router(
-    pipeline.router,
-    prefix="/pipeline",
-    tags=["pipeline"],
-    dependencies=[Depends(verify_api_key)],
-)
-
-app.include_router(
-    analytics.router,
-    prefix="/analytics",
-    tags=["analytics"],
     dependencies=[Depends(verify_api_key)],
 )
 

@@ -1,7 +1,6 @@
 """API key authentication dependency."""
 
 import logging
-import os
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -16,7 +15,7 @@ security = HTTPBearer()
 def _valid_keys() -> list[str]:
     """Return all accepted API keys."""
     keys = [settings.api_key]
-    exam_key = os.environ.get("EXAM_API_KEY", "")
+    exam_key = settings.exam_api_key
     if exam_key:
         keys.append(exam_key)
     return keys
