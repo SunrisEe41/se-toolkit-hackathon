@@ -184,6 +184,201 @@ tr:nth-child(even) {
   padding-left: 1.5rem;
 }
 
+/* Practice page */
+
+.practice-intro {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.practice-intro code {
+  background: #f0f0f0;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+.topic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.topic-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.topic-btn.active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.loading {
+  color: #666;
+  font-style: italic;
+}
+
+.task-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #fff;
+  max-width: 700px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.task-topic {
+  font-weight: 600;
+  color: #1e3a5f;
+}
+
+.task-diff {
+  padding: 0.15rem 0.6rem;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.task-question {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.task-answer-section {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.task-answer-section input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.task-answer-section button {
+  padding: 0.5rem 1.25rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.task-feedback {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.task-feedback.correct {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.task-feedback.wrong {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.task-feedback p {
+  margin: 0.25rem 0;
+}
+
+.btn-next {
+  padding: 0.5rem 1.25rem;
+  background: #6b7280;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Progress page */
+
+.progress-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.progress-form label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-form input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.progress-form button {
+  padding: 0.4rem 1rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 600px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.no-data {
+  color: #666;
+  font-style: italic;
+}
+
+.no-data code {
+  background: #f0f0f0;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
 .chat-page {
   display: flex;
   flex-direction: column;

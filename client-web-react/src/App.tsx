@@ -1,64 +1,19 @@
-import { useState, useEffect, useReducer, FormEvent } from "react";
-import Dashboard from "./Dashboard";
+import { useState, useEffect, FormEvent } from "react";
 import { TheoryPage } from "./TheoryPage";
+import { PracticePage } from "./PracticePage";
+import { ProgressPage } from "./ProgressPage";
 import "./App.css";
 
 const STORAGE_KEY = "api_key";
 
-type Page = "items" | "dashboard" | "theory";
-
-interface Item {
-  id: number;
-  type: string;
-  title: string;
-  created_at: string;
-}
-
-type FetchState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "success"; items: Item[] }
-  | { status: "error"; message: string };
-
-type FetchAction =
-  | { type: "fetch_start" }
-  | { type: "fetch_success"; data: Item[] }
-  | { type: "fetch_error"; message: string };
-
-function fetchReducer(_state: FetchState, action: FetchAction): FetchState {
-  switch (action.type) {
-    case "fetch_start":
-      return { status: "loading" };
-    case "fetch_success":
-      return { status: "success", items: action.data };
-    case "fetch_error":
-      return { status: "error", message: action.message };
-  }
-}
+type Page = "theory" | "practice" | "progress";
 
 function App() {
   const [token, setToken] = useState(
     () => localStorage.getItem(STORAGE_KEY) ?? ""
   );
   const [draft, setDraft] = useState("");
-  const [page, setPage] = useState<Page>("items");
-  const [fetchState, dispatch] = useReducer(fetchReducer, { status: "idle" });
-
-  useEffect(() => {
-    if (!token) return;
-    dispatch({ type: "fetch_start" });
-    fetch("/items/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: Item[]) => dispatch({ type: "fetch_success", data }))
-      .catch((err: Error) =>
-        dispatch({ type: "fetch_error", message: err.message })
-      );
-  }, [token]);
+  const [page, setPage] = useState<Page>("practice");
 
   function handleConnect(e: FormEvent) {
     e.preventDefault();
@@ -78,7 +33,7 @@ function App() {
     return (
       <form className="token-form" onSubmit={handleConnect}>
         <h1>🎓 Exam Prep Bot</h1>
-        <p>Enter your API key to access theory and practice.</p>
+        <p>Practice problems and review theory for analytical geometry and linear algebra.</p>
         <input
           type="password"
           placeholder="API Key"
@@ -103,49 +58,18 @@ function App() {
     <div>
       <header className="app-header">
         <nav className="nav-links">
+          {navBtn("practice", "Practice", "✏️")}
           {navBtn("theory", "Theory", "📚")}
-          {navBtn("dashboard", "Dashboard", "📊")}
-          {navBtn("items", "Items", "📋")}
+          {navBtn("progress", "Progress", "📊")}
         </nav>
         <button className="btn-disconnect" onClick={handleDisconnect}>
           Disconnect
         </button>
       </header>
 
-      {page === "dashboard" ? (
-        <Dashboard token={token} />
-      ) : page === "theory" ? (
-        <TheoryPage apiKey={token} />
-      ) : (
-        <>
-          {fetchState.status === "loading" && <p>Loading...</p>}
-          {fetchState.status === "error" && (
-            <p className="error">{fetchState.message}</p>
-          )}
-          {fetchState.status === "success" && (
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Type</th>
-                  <th>Title</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fetchState.items.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>{item.type}</td>
-                    <td>{item.title}</td>
-                    <td>{item.created_at}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </>
-      )}
+      {page === "practice" && <PracticePage apiKey={token} />}
+      {page === "theory" && <TheoryPage apiKey={token} />}
+      {page === "progress" && <ProgressPage apiKey={token} />}
     </div>
   );
 }
