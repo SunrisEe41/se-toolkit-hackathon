@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 
 import httpx
 from fastapi import APIRouter, Depends
@@ -50,16 +51,21 @@ async def chat_post(
         *history[-20:],  # keep last 20 messages
     ]
 
+    # LLM URL: in Docker use service name, locally use host
+    llm_base = os.environ.get("AGENT_LLM_URL", "http://qwen-code-api:8080/v1")
+
+    llm_key = os.environ.get("LLM_API_KEY", settings.api_key)
+
     async with httpx.AsyncClient(timeout=120) as client:
         resp = await client.post(
-            f"http://localhost:42005/v1/chat/completions",
+            f"{llm_base}/chat/completions",
             json={
                 "model": "coder-model",
                 "messages": messages,
                 "stream": False,
                 "max_tokens": 2048,
             },
-            headers={"Authorization": f"Bearer {settings.api_key}"},
+            headers={"Authorization": f"Bearer {llm_key}"},
         )
         resp.raise_for_status()
         data = resp.json()
