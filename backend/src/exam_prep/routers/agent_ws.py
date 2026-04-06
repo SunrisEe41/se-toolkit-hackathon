@@ -22,7 +22,10 @@ Help students practice by giving problems, checking answers, and explaining conc
 Be concise but thorough. Use formatting (bold, lists) for readability.
 When the user asks for a problem, give them a practice problem and wait for their answer.
 When they answer, tell them if it's correct and explain why.
-If you don't know something, say so honestly."""
+If you don't know something, say so honestly.
+
+IMPORTANT: When writing math formulas, use $...$ for inline math (e.g., $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$) and $$...$$ for display math on separate lines. Do NOT use parentheses (...) for formulas.
+"""
 
 
 class ChatRequest(BaseModel):

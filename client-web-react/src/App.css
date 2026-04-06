@@ -534,11 +534,17 @@ tr:nth-child(even) {
 
 .md-content {
   font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .md-content p {
   margin: 0.3rem 0;
   white-space: normal;
+}
+
+.md-content strong {
+  font-size: inherit;
+  font-weight: 600;
 }
 
 .md-content p code,
@@ -551,13 +557,18 @@ tr:nth-child(even) {
   font-size: 0.9em;
 }
 
-.md-content h2, .md-content h3, .md-content h4 {
+.md-content h1,
+.md-content h2,
+.md-content h3,
+.md-content h4,
+.md-content h5,
+.md-content h6 {
   margin: 0.75rem 0 0.25rem;
   font-weight: 600;
 }
 
-.md-content h2 { font-size: 1.1rem; }
-.md-content h3 { font-size: 1rem; }
+.md-content h2 { font-size: 1.15rem; }
+.md-content h3 { font-size: 1.05rem; }
 .md-content h4 { font-size: 0.95rem; }
 
 .md-content pre.code-block {
@@ -588,6 +599,11 @@ tr:nth-child(even) {
   border: none;
   border-top: 1px solid #ddd;
   margin: 0.75rem 0;
+}
+
+.md-content .katex-display {
+  margin: 0.5rem 0;
+  overflow-x: auto;
 }
 
 .chat-input {
