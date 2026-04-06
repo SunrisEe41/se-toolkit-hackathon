@@ -16,7 +16,7 @@ export function ChatPage({ wsUrl }: { wsUrl?: string }) {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const [buffer, setBuffer] = useState("");
-  const [draft, setDraft] = useState(chatKey);
+  const [draft, setDraft] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const bufferRef = useRef("");
@@ -104,14 +104,16 @@ export function ChatPage({ wsUrl }: { wsUrl?: string }) {
       <div className="chat-page chat-setup">
         <h2>🤖 Exam Prep Agent</h2>
         <p>Enter your API key to connect to the agent.</p>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const trimmed = draft.trim();
-          if (trimmed) {
-            localStorage.setItem("chat_key", trimmed);
-            setChatKey(trimmed);
-          }
-        }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const trimmed = draft.trim();
+            if (trimmed) {
+              localStorage.setItem("chat_key", trimmed);
+              setChatKey(trimmed);
+            }
+          }}
+        >
           <input
             type="password"
             placeholder="API Key"
@@ -128,9 +130,24 @@ export function ChatPage({ wsUrl }: { wsUrl?: string }) {
     <div className="chat-page">
       <div className="chat-header">
         <h2>🤖 Exam Prep Agent</h2>
-        <span className={connected ? "status on" : "status off"}>
-          {connected ? "Connected" : "Disconnected"}
-        </span>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <span className={connected ? "status on" : "status off"}>
+            {connected ? "Connected" : "Disconnected"}
+          </span>
+          <button
+            className="btn-disconnect"
+            onClick={() => {
+              wsRef.current?.close();
+              setChatKey("");
+              setMessages([]);
+              setConnected(false);
+              setDraft("");
+            }}
+            style={{ padding: "0.2rem 0.6rem", fontSize: "0.8rem" }}
+          >
+            Disconnect
+          </button>
+        </div>
       </div>
 
       <div className="chat-messages">
