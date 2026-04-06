@@ -5,7 +5,6 @@ import { ChatPage } from "./ChatPage";
 import "./App.css";
 
 const STORAGE_KEY = "api_key";
-const CHAT_KEY_STORAGE = "chat_key";
 
 // Auto-detect WebSocket URL from current origin
 function defaultWsUrl(): string {
@@ -21,9 +20,6 @@ function App() {
     () => localStorage.getItem(STORAGE_KEY) ?? ""
   );
   const [wsUrl, setWsUrl] = useState(defaultWsUrl);
-  const [chatKey, setChatKey] = useState(
-    () => localStorage.getItem(CHAT_KEY_STORAGE) ?? ""
-  );
   const [draft, setDraft] = useState("");
   const [page, setPage] = useState<Page>("theory");
 
@@ -80,12 +76,7 @@ function App() {
       </header>
 
       {page === "theory" && <TheoryPage apiKey={token} />}
-      {page === "chat" && (
-        <ChatPage
-          wsUrl={wsUrl}
-          chatKey={chatKey}
-        />
-      )}
+      {page === "chat" && <ChatPage wsUrl={wsUrl} />}
       {page === "progress" && <ProgressPage apiKey={token} />}
     </div>
   );

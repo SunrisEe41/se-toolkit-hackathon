@@ -7,12 +7,16 @@ interface Message {
   timestamp: number;
 }
 
-export function ChatPage({ wsUrl, chatKey }: { wsUrl?: string; chatKey: string }) {
+export function ChatPage({ wsUrl }: { wsUrl?: string }) {
+  const [chatKey, setChatKey] = useState(
+    () => localStorage.getItem("chat_key") ?? ""
+  );
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const [buffer, setBuffer] = useState("");
+  const [draft, setDraft] = useState(chatKey);
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const bufferRef = useRef("");
@@ -99,19 +103,23 @@ export function ChatPage({ wsUrl, chatKey }: { wsUrl?: string; chatKey: string }
     return (
       <div className="chat-page chat-setup">
         <h2>🤖 Exam Prep Agent</h2>
-        <p>Enter your API key to connect (same as used for login).</p>
-        <label>
-          Access key:
+        <p>Enter your API key to connect to the agent.</p>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const trimmed = draft.trim();
+          if (trimmed) {
+            localStorage.setItem("chat_key", trimmed);
+            setChatKey(trimmed);
+          }
+        }}>
           <input
             type="password"
             placeholder="API Key"
-            value={chatKey}
-            onChange={(e) => {
-              const v = e.target.value;
-              localStorage.setItem("chat_key", v);
-            }}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
           />
-        </label>
+          <button type="submit">Connect</button>
+        </form>
       </div>
     );
   }
