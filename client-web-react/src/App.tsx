@@ -17,6 +17,7 @@ function App() {
     () => localStorage.getItem(STUDENT_ID_KEY) ?? ""
   );
   const [sidDraft, setSidDraft] = useState(studentId);
+  const [sidSaved, setSidSaved] = useState(false);
   const [draft, setDraft] = useState("");
   const [page, setPage] = useState<Page>("theory");
 
@@ -75,16 +76,19 @@ function App() {
             if (trimmed) {
               localStorage.setItem(STUDENT_ID_KEY, trimmed);
               setStudentId(trimmed);
+              setSidSaved(true);
+              setTimeout(() => setSidSaved(false), 2000);
             }
           }}
         >
+          <span className="sid-label">Student:</span>
           <input
             type="text"
-            placeholder="Your name / Student ID"
+            placeholder="Your name"
             value={sidDraft}
             onChange={(e) => setSidDraft(e.target.value)}
           />
-          <button type="submit">Save</button>
+          <button type="submit">{sidSaved ? "✓" : "Save"}</button>
         </form>
         <button className="btn-disconnect" onClick={handleDisconnect}>
           Disconnect
