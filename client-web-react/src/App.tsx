@@ -95,9 +95,17 @@ function App() {
         </button>
       </header>
 
-      {page === "theory" && <TheoryPage apiKey={token} />}
-      {page === "chat" && <ChatPage apiKey={token} studentId={studentId} />}
-      {page === "progress" && <ProgressPage apiKey={token} studentId={studentId} />}
+      <div className="pages-container">
+        <div className={`page ${page === "theory" ? "active" : ""}`}>
+          <TheoryPage apiKey={token} />
+        </div>
+        <div className={`page ${page === "chat" ? "active" : ""}`}>
+          <ChatPage apiKey={token} studentId={studentId} />
+        </div>
+        <div className={`page ${page === "progress" ? "active" : ""}`}>
+          <ProgressPage apiKey={token} studentId={studentId} />
+        </div>
+      </div>
     </div>
   );
 }
