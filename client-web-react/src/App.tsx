@@ -1,19 +1,31 @@
 import { useState, useEffect, FormEvent } from "react";
 import { TheoryPage } from "./TheoryPage";
-import { PracticePage } from "./PracticePage";
 import { ProgressPage } from "./ProgressPage";
+import { ChatPage } from "./ChatPage";
 import "./App.css";
 
 const STORAGE_KEY = "api_key";
+const CHAT_KEY_STORAGE = "chat_key";
 
-type Page = "theory" | "practice" | "progress";
+// Auto-detect WebSocket URL from current origin
+function defaultWsUrl(): string {
+  if (typeof window === "undefined") return "";
+  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${window.location.host}/ws/agent`;
+}
+
+type Page = "theory" | "progress" | "chat";
 
 function App() {
   const [token, setToken] = useState(
     () => localStorage.getItem(STORAGE_KEY) ?? ""
   );
+  const [wsUrl, setWsUrl] = useState(defaultWsUrl);
+  const [chatKey, setChatKey] = useState(
+    () => localStorage.getItem(CHAT_KEY_STORAGE) ?? ""
+  );
   const [draft, setDraft] = useState("");
-  const [page, setPage] = useState<Page>("practice");
+  const [page, setPage] = useState<Page>("theory");
 
   function handleConnect(e: FormEvent) {
     e.preventDefault();
@@ -33,7 +45,7 @@ function App() {
     return (
       <form className="token-form" onSubmit={handleConnect}>
         <h1>🎓 Exam Prep Bot</h1>
-        <p>Practice problems and review theory for analytical geometry and linear algebra.</p>
+        <p>Practice problems, review theory, and chat with an AI agent.</p>
         <input
           type="password"
           placeholder="API Key"
@@ -58,8 +70,8 @@ function App() {
     <div>
       <header className="app-header">
         <nav className="nav-links">
-          {navBtn("practice", "Practice", "✏️")}
           {navBtn("theory", "Theory", "📚")}
+          {navBtn("chat", "Chat", "🤖")}
           {navBtn("progress", "Progress", "📊")}
         </nav>
         <button className="btn-disconnect" onClick={handleDisconnect}>
@@ -67,8 +79,13 @@ function App() {
         </button>
       </header>
 
-      {page === "practice" && <PracticePage apiKey={token} />}
       {page === "theory" && <TheoryPage apiKey={token} />}
+      {page === "chat" && (
+        <ChatPage
+          wsUrl={wsUrl}
+          chatKey={chatKey}
+        />
+      )}
       {page === "progress" && <ProgressPage apiKey={token} />}
     </div>
   );

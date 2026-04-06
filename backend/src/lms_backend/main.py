@@ -20,6 +20,7 @@ from exam_prep.routers import (
     tasks,
     theory,
     topics,
+    agent_ws as exam_agent,
 )
 
 logger = logging.getLogger(__name__)
@@ -141,3 +142,6 @@ app.include_router(
     tags=["exam-prep"],
     dependencies=[Depends(verify_api_key)],
 )
+
+# Agent WebSocket — no auth dependency (auth handled inside WS)
+app.include_router(exam_agent.router)
