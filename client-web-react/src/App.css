@@ -487,11 +487,27 @@ tr:nth-child(even) {
 
 .msg p {
   margin: 0;
-  white-space: pre-wrap;
   line-height: 1.5;
 }
 
-.msg p code.inline-code {
+.msg p code {
+  white-space: pre-wrap;
+}
+
+/* Markdown content inside messages */
+
+.md-content {
+  font-size: 0.95rem;
+}
+
+.md-content p {
+  margin: 0.3rem 0;
+  white-space: normal;
+}
+
+.md-content p code,
+.md-content li code,
+.md-content code.inline-code {
   background: rgba(0,0,0,0.08);
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
@@ -501,7 +517,12 @@ tr:nth-child(even) {
 
 .md-content h2, .md-content h3, .md-content h4 {
   margin: 0.75rem 0 0.25rem;
+  font-weight: 600;
 }
+
+.md-content h2 { font-size: 1.1rem; }
+.md-content h3 { font-size: 1rem; }
+.md-content h4 { font-size: 0.95rem; }
 
 .md-content pre.code-block {
   background: #1e1e1e;
@@ -516,6 +537,10 @@ tr:nth-child(even) {
 
 .md-content pre.code-block code {
   font-family: "Consolas", "Monaco", monospace;
+  font-size: inherit;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
 
 .md-content ul, .md-content ol {
