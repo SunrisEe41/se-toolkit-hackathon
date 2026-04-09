@@ -1,4 +1,8 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import "./App.css";
 
 interface Task {
@@ -6,6 +10,23 @@ interface Task {
   topic_id: number;
   question: string;
   difficulty: string;
+}
+
+interface Result {
+  task: Task;
+  answer: string;
+  correct: boolean;
+  explanation: string;
+}
+
+function MdText({ text }: { text: string }) {
+  return (
+    <div className="md-content">
+      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+        {text}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 export function ExamPage({
@@ -19,12 +40,10 @@ export function ExamPage({
   const [examTasks, setExamTasks] = useState<Task[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
-  const [results, setResults] = useState<
-    { task: Task; answer: string; correct: boolean; explanation: string }[]
-  >([]);
+  const [results, setResults] = useState<(Result | null)[]>([]);
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   const headers = { Authorization: `Bearer ${apiKey}` };
 
@@ -37,10 +56,12 @@ export function ExamPage({
         body: JSON.stringify({ student_id: studentId, num_tasks: numTasks }),
       });
       const data = await resp.json();
-      setExamTasks(data.tasks || []);
+      const tasks = data.tasks || [];
+      setExamTasks(tasks);
       setCurrentIndex(0);
-      setAnswers(new Array(numTasks).fill(""));
-      setResults([]);
+      setAnswers(new Array(tasks.length).fill(""));
+      setResults(new Array(tasks.length).fill(null));
+      setShowSummary(false);
     } catch {
       alert("Failed to start exam. Please try again.");
     } finally {
@@ -74,10 +95,9 @@ export function ExamPage({
         reply.toUpperCase().includes("CORRECT") &&
         !reply.toUpperCase().includes("INCORRECT");
 
-      setResults((prev) => [
-        ...prev,
-        { task, answer, correct, explanation: reply },
-      ]);
+      const newResults = [...results];
+      newResults[currentIndex] = { task, answer, correct, explanation: reply };
+      setResults(newResults);
 
       // Auto-submit to track progress
       try {
@@ -91,7 +111,7 @@ export function ExamPage({
           }),
         });
       } catch {
-        // submit is best-effort
+        // best-effort
       }
     } catch {
       alert("Failed to check answer.");
@@ -106,12 +126,11 @@ export function ExamPage({
     }
   };
 
-  const showResults = () => {
-    setSubmitting(true);
-  };
+  const correctCount = results.filter((r) => r?.correct).length;
+  const answeredCount = results.filter((r) => r !== null).length;
+  const allDone = answeredCount === examTasks.length;
 
-  const correctCount = results.filter((r) => r.correct).length;
-
+  // Setup screen
   if (examTasks.length === 0 && !loading) {
     return (
       <div className="exam-page">
@@ -151,8 +170,8 @@ export function ExamPage({
     );
   }
 
-  // Results screen
-  if (submitting) {
+  // Summary screen
+  if (showSummary) {
     return (
       <div className="exam-page">
         <h2>📝 Exam Results</h2>
@@ -164,23 +183,22 @@ export function ExamPage({
             <span className="score-label">Correct</span>
           </div>
           <div className="result-list">
-            {results.map((r, i) => (
-              <div key={i} className={`result-item ${r.correct ? "ok" : "fail"}`}>
-                <strong>
-                  Q{i + 1}: {r.task.question.slice(0, 80)}
-                  {r.task.question.length > 80 ? "…" : ""}
-                </strong>
-                <p>Your answer: {r.answer}</p>
-                <p>{r.explanation}</p>
-              </div>
-            ))}
+            {results.map((r, i) =>
+              r ? (
+                <div key={i} className={`result-item ${r.correct ? "ok" : "fail"}`}>
+                  <strong>Q{i + 1}: {r.task.question}</strong>
+                  <p>Your answer: {r.answer}</p>
+                  <MdText text={r.explanation} />
+                </div>
+              ) : null
+            )}
           </div>
           <button onClick={() => {
             setExamTasks([]);
             setAnswers([]);
             setResults([]);
             setCurrentIndex(0);
-            setSubmitting(false);
+            setShowSummary(false);
           }}>
             New Exam
           </button>
@@ -191,44 +209,7 @@ export function ExamPage({
 
   // Exam in progress
   const task = examTasks[currentIndex];
-  const allDone = results.length === examTasks.length;
-
-  if (allDone) {
-    return (
-      <div className="exam-page">
-        <h2>📝 Exam Complete</h2>
-        <p>
-          You answered all {examTasks.length} tasks.{" "}
-          <strong>{correctCount}/{examTasks.length}</strong> correct.
-        </p>
-        <div className="result-list">
-          {results.map((r, i) => (
-            <div key={i} className={`result-item ${r.correct ? "ok" : "fail"}`}>
-              <strong>Q{i + 1}</strong>
-              <p>{r.task.question}</p>
-              <p>Your answer: {r.answer}</p>
-              <p>{r.explanation}</p>
-            </div>
-          ))}
-        </div>
-        <button onClick={showResults}>Detailed Results</button>
-        <button
-          className="btn-secondary"
-          onClick={() => {
-            setExamTasks([]);
-            setAnswers([]);
-            setResults([]);
-            setCurrentIndex(0);
-            setSubmitting(false);
-          }}
-        >
-          New Exam
-        </button>
-      </div>
-    );
-  }
-
-  const hasResult = results[currentIndex];
+  const currentResult = results[currentIndex];
 
   return (
     <div className="exam-page">
@@ -243,7 +224,7 @@ export function ExamPage({
         <div
           className="exam-progress-fill"
           style={{
-            width: `${((currentIndex + (hasResult ? 1 : 0)) / examTasks.length) * 100}%`,
+            width: `${(answeredCount / examTasks.length) * 100}%`,
           }}
         />
       </div>
@@ -273,11 +254,11 @@ export function ExamPage({
             onChange={(e) => updateAnswer(e.target.value)}
             placeholder="Your answer (show steps if needed)..."
             rows={4}
-            disabled={hasResult || checking}
+            disabled={!!currentResult || checking}
           />
         </div>
 
-        {!hasResult && !checking && (
+        {!currentResult && !checking && (
           <div className="exam-actions">
             <button onClick={checkAnswer} disabled={!answers[currentIndex].trim()}>
               Check Answer
@@ -287,38 +268,43 @@ export function ExamPage({
 
         {checking && <p className="loading">Checking your answer...</p>}
 
-        {hasResult && (
-          <div className={`task-feedback ${hasResult.correct ? "correct" : "wrong"}`}>
-            <p>{hasResult.explanation}</p>
+        {currentResult && (
+          <div className={`task-feedback ${currentResult.correct ? "correct" : "wrong"}`}>
+            <MdText text={currentResult.explanation} />
           </div>
         )}
 
-        {hasResult && currentIndex + 1 < examTasks.length && (
+        {currentResult && currentIndex + 1 < examTasks.length && (
           <div className="exam-actions">
             <button onClick={nextTask}>Next Task →</button>
           </div>
         )}
 
-        {hasResult && currentIndex + 1 >= examTasks.length && (
+        {currentResult && allDone && (
           <div className="exam-actions">
-            <button onClick={showResults}>See Results</button>
+            <button onClick={() => setShowSummary(true)}>
+              See Results
+            </button>
           </div>
         )}
       </div>
 
-      {/* Task navigation */}
+      {/* Task navigation dots */}
       <div className="exam-task-nav">
-        {examTasks.map((t, i) => (
-          <button
-            key={t.id}
-            className={`task-dot ${i === currentIndex ? "current" : ""} ${
-              results[i] ? (results[i].correct ? "done-ok" : "done-fail") : ""
-            }`}
-            onClick={() => setCurrentIndex(i)}
-          >
-            {i + 1}
-          </button>
-        ))}
+        {examTasks.map((t, i) => {
+          const r = results[i];
+          return (
+            <button
+              key={t.id}
+              className={`task-dot ${i === currentIndex ? "current" : ""} ${
+                r ? (r.correct ? "done-ok" : "done-fail") : ""
+              }`}
+              onClick={() => setCurrentIndex(i)}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
