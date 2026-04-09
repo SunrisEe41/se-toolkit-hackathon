@@ -7,12 +7,13 @@
 **Screenshots:**
 
 *Theory review page with topic selection and formatted content.*
-
+![alt text](image.png)
 *Interactive exam mode with progress tracking and per-task feedback.*
-
+![alt text](image-1.png)
 *AI chat tutor for personalized help with any topic.*
+![alt text](image-2.png)
 
-## Product
+## Product Context
 
 | Element | Description |
 |---|---|
@@ -36,32 +37,12 @@
 
 | Feature | Description |
 |---|---|
-| Markdown+KaTeX rendering in theory cards | Already in progress |
 | Mobile-friendly responsive layout | UI improvements |
 | More topics and problems | Content expansion |
 
-## Architecture
-
-```
-[React Web UI] ── HTTP/WS ──> [FastAPI Backend]
-                                      │
-                               ┌──────┼──────┐
-                               │      │      │
-                          [PostgreSQL]  [Qwen Code API]
-                          (topics,     (LLM for
-                           tasks,       chat &
-                           theory,      grading)
-                           attempts)
-                               │
-                          [MCP Server] ── tools for LLM
-                          (exam-prep)
-```
-
-**Tech stack:** React (Vite), FastAPI, PostgreSQL, Qwen Code API (LLM), MCP, Docker Compose, Caddy.
-
 ## Usage
 
-1. Open `http://<vm-ip>:42002` in a browser.
+1. Open `http://10.93.25.40:42002` in a browser.
 2. Enter your name/ID on the welcome screen.
 3. Enter the API key to unlock all features.
 4. **Theory** — browse topics and review material.
@@ -121,7 +102,3 @@
 ├── docker-compose.yml           # All services definition
 └── caddy/Caddyfile              # Reverse proxy config
 ```
-
-## License
-
-MIT
