@@ -14,7 +14,14 @@ from starlette.responses import Response
 from lms_backend.auth import verify_api_key
 from lms_backend.routers import items
 from lms_backend.settings import settings
-from exam_prep.routers import health as exam_health, tasks, theory, topics
+from exam_prep.routers import (
+    health as exam_health,
+    progress as exam_progress,
+    tasks,
+    theory,
+    topics,
+    agent_ws as exam_agent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -123,8 +130,18 @@ app.include_router(
 )
 
 app.include_router(
+    exam_progress.router,
+    prefix="/exam/progress",
+    tags=["exam-prep"],
+    dependencies=[Depends(verify_api_key)],
+)
+
+app.include_router(
     theory.router,
     prefix="/exam/theory",
     tags=["exam-prep"],
     dependencies=[Depends(verify_api_key)],
 )
+
+# Agent chat endpoint — uses API key auth
+app.include_router(exam_agent.router, prefix="/exam", tags=["exam-prep"])

@@ -24,8 +24,14 @@ export default defineConfig(({ mode }) => {
         "/interactions": { target, changeOrigin: true },
         "/analytics": { target, changeOrigin: true },
         "/pipeline": { target, changeOrigin: true },
+        "/exam": { target, changeOrigin: true },
         "/docs": { target, changeOrigin: true },
         "/openapi.json": { target, changeOrigin: true },
+        "/ws": {
+          target: env.VITE_WS_TARGET || target,
+          changeOrigin: true,
+          ws: true,
+        },
       },
     },
   };

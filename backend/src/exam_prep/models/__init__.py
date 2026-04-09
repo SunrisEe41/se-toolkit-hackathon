@@ -1,14 +1,24 @@
 """Exam prep domain models."""
 
-from exam_prep.models.task import TaskRecord, TaskRead
-from exam_prep.models.theory import TheoryRecord, TheoryRead
-from exam_prep.models.topic import TopicRecord, TopicRead
+from exam_prep.models.attempt import (
+    AttemptCreate,
+    AttemptRead,
+    AttemptRecord,
+    ProgressRead,
+)
+from exam_prep.models.task import TaskRead, TaskRecord
+from exam_prep.models.theory import TheoryRead, TheoryRecord
+from exam_prep.models.topic import TopicRead, TopicRecord
 
 __all__ = [
-    "TaskRecord",
+    "AttemptCreate",
+    "AttemptRead",
+    "AttemptRecord",
+    "ProgressRead",
     "TaskRead",
-    "TheoryRecord",
+    "TaskRecord",
     "TheoryRead",
-    "TopicRecord",
+    "TheoryRecord",
     "TopicRead",
+    "TopicRecord",
 ]

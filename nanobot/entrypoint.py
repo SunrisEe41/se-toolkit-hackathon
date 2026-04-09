@@ -27,9 +27,12 @@ class Settings(BaseSettings):
         ..., alias="NANOBOT_GATEWAY_CONTAINER_PORT"
     )
 
-    # Task 2B — uncomment after you add the webchat channel.
-    # nanobot_webchat_container_address: str = Field(..., alias="NANOBOT_WEBCHAT_CONTAINER_ADDRESS")
-    # nanobot_webchat_container_port: int = Field(..., alias="NANOBOT_WEBCHAT_CONTAINER_PORT")
+    nanobot_webchat_container_address: str = Field(
+        default="0.0.0.0", alias="NANOBOT_WEBCHAT_CONTAINER_ADDRESS"
+    )
+    nanobot_webchat_container_port: int = Field(
+        default=8765, alias="NANOBOT_WEBCHAT_CONTAINER_PORT"
+    )
 
     nanobot_lms_backend_url: str = Field(..., alias="NANOBOT_LMS_BACKEND_URL")
     nanobot_lms_api_key: str = Field(..., alias="NANOBOT_LMS_API_KEY")
@@ -77,13 +80,12 @@ def _resolve_config() -> Config:
     config.gateway.host = env.nanobot_gateway_container_address
     config.gateway.port = env.nanobot_gateway_container_port
 
-    # Task 2B — uncomment after you add the webchat channel.
-    # config.channels.webchat = {  # pyright: ignore[reportAttributeAccessIssue]
-    #     "enabled": True,
-    #     "host": env.nanobot_webchat_container_address,
-    #     "port": env.nanobot_webchat_container_port,
-    #     "allowFrom": ["*"],
-    # }
+    config.channels.webchat = {  # pyright: ignore[reportAttributeAccessIssue]
+        "enabled": True,
+        "host": env.nanobot_webchat_container_address,
+        "port": env.nanobot_webchat_container_port,
+        "allowFrom": ["*"],
+    }
 
     # MCP servers
     config.tools.mcp_servers["lms"] = MCPServerConfig(

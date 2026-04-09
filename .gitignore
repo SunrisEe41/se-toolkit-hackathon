@@ -13,7 +13,7 @@ __pycache__/
 QWEN.md
 uv.lock
 tmp
-
+screenshots/
 **/settings.local.json
 
 .lycheecache

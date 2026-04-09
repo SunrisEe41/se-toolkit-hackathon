@@ -26,6 +26,15 @@ CREATE TABLE IF NOT EXISTS theory (
     content TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS attempt (
+    id SERIAL PRIMARY KEY,
+    student_id VARCHAR(128) NOT NULL,
+    task_id INTEGER NOT NULL REFERENCES task(id) ON DELETE CASCADE,
+    user_answer TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Seed data
 
 -- Topics
